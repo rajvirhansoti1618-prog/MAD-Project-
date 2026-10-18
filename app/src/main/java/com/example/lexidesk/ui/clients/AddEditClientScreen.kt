@@ -213,7 +213,8 @@ fun AddEditClientScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(50.dp)
+                    .semantics { contentDescription = "Save client" },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
             ) {
