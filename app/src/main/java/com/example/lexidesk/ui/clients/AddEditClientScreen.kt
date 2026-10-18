@@ -148,6 +148,8 @@ fun AddEditClientScreen(
                 onValueChange = { phone = it },
                 label = { Text(stringResource(R.string.phone_label)) },
                 leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
+                isError = phoneError != null,
+                supportingText = { phoneError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -158,6 +160,8 @@ fun AddEditClientScreen(
                 onValueChange = { email = it },
                 label = { Text(stringResource(R.string.email_label)) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                isError = emailError != null,
+                supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -201,21 +205,29 @@ fun AddEditClientScreen(
                         nameError = "Client name is required"
                         return@Button
                     }
-                    if (email.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(email)) {
-                        emailError = "Invalid email address"
-                        return@Button
-                    }
-                        id = clientId ?: 0L,
-                        fullName = fullName,
-                        clientType = clientType,
-                        phone = phone,
-                        email = email,
-                        address = address,
-                        companyName = companyName,
-                        notes = notes,
-                        tags = tags,
-                        onSuccess = onSaveSuccess
-                    )
+                    // Validate inputs
+                if (email.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(email)) {
+                    emailError = "Invalid email address"
+                    return@Button
+                }
+                if (phone.isNotBlank() && !phone.matches(Regex("\\d{7,}"))) {
+                    phoneError = "Invalid phone number"
+                    return@Button
+                }
+
+                // Save client
+                viewModel.saveClient(
+                    id = clientId ?: 0L,
+                    fullName = fullName,
+                    clientType = clientType,
+                    phone = phone,
+                    email = email,
+                    address = address,
+                    companyName = companyName,
+                    notes = notes,
+                    tags = tags,
+                    onSuccess = onSaveSuccess
+                )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
