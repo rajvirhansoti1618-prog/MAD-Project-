@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,7 +82,7 @@ fun AddEditClientScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (clientId != null && clientId > 0) "Edit Client" else "Add New Client") },
+                title = { Text(if (clientId != null && clientId > 0) stringResource(R.string.edit_client) else stringResource(R.string.add_new_client)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -121,7 +122,7 @@ fun AddEditClientScreen(
                     fullName = it
                     if (it.isNotBlank()) nameError = null
                 },
-                label = { Text("Full Name / Client Legal Name *") },
+                label = { Text(stringResource(R.string.full_name_label)) },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 isError = nameError != null,
                 supportingText = { nameError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
@@ -133,7 +134,7 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = companyName,
                 onValueChange = { companyName = it },
-                label = { Text(if (clientType == "Business") "Company / Entity Name *" else "Associated Company / Practice (Optional)") },
+                label = { Text(if (clientType == "Business") stringResource(R.string.company_name_required) else stringResource(R.string.company_name_optional)) },
                 leadingIcon = { Icon(Icons.Default.Business, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -143,7 +144,7 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = phone,
                 onValueChange = { phone = it },
-                label = { Text("Contact Phone Number") },
+                label = { Text(stringResource(R.string.phone_label)) },
                 leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -153,7 +154,7 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email Address") },
+                label = { Text(stringResource(R.string.email_label)) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -163,7 +164,7 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
-                label = { Text("Office / Registered Address") },
+                label = { Text(stringResource(R.string.address_label)) },
                 leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2
@@ -173,7 +174,7 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = tags,
                 onValueChange = { tags = it },
-                label = { Text("Tags (e.g. Civil, Retainer, High Priority)") },
+                label = { Text(stringResource(R.string.tags_label)) },
                 leadingIcon = { Icon(Icons.Default.Tag, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -183,7 +184,7 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Confidential Internal Notes") },
+                label = { Text(stringResource(R.string.notes_label)) },
                 leadingIcon = { Icon(Icons.Default.Note, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
@@ -218,7 +219,7 @@ fun AddEditClientScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
             ) {
-                Text("Save Client Record")
+                Text(stringResource(R.string.save_client_record))
             }
         }
     }
