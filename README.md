@@ -173,6 +173,8 @@ app/src/main/java/com/example/lexidesk/
 
 ## 🤝 Contributing
 
+![CI](https://github.com/rajvirhansoti1618-prog/MAD-Project-/actions/workflows/ci.yml/badge.svg)
+
 We welcome contributions! To get started:
 1. Fork the repository.
 2. Clone your fork locally.
