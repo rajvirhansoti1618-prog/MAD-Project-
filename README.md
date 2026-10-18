@@ -170,3 +170,16 @@ app/src/main/java/com/example/lexidesk/
 3. Connect an Android device or start an emulator.
 4. Click **Run** (Shift+F10) or use `./gradlew installDebug` to install the app.
 5. Follow the on-screen onboarding to set up your profile.
+
+## 🤝 Contributing
+
+We welcome contributions! To get started:
+1. Fork the repository.
+2. Clone your fork locally.
+3. Create a new branch (`git checkout -b <branch-name>`).
+4. Make your changes following the existing code style.
+5. Run the project to ensure it builds (`./gradlew assembleDebug`).
+6. Commit with a clear conventional‑commit message.
+7. Push to your fork and open a Pull Request.
+
+Please keep the commits **small and focused** and avoid altering the core functionality unless fixing a genuine bug.

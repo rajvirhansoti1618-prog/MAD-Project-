@@ -10,3 +10,14 @@ app/build/
 /captures
 .externalNativeBuild
 .cxx
+
+# Android Studio & Gradle
+.gradle
+/local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+**/build/
+**/.cxx/
+**/.externalNativeBuild/
