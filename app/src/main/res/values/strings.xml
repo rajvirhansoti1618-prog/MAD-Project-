@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">LexiDesk</string>
+    <string name="add_new_client">Add New Client</string>
+    <string name="edit_client">Edit Client</string>
+    <string name="client_type">Client Type</string>
+    <string name="full_name_label">Full Name / Client Legal Name *</string>
+    <string name="company_name_required">Company / Entity Name *</string>
+    <string name="company_name_optional">Associated Company / Practice (Optional)</string>
+    <string name="phone_label">Contact Phone Number</string>
+    <string name="email_label">Email Address</string>
+    <string name="address_label">Office / Registered Address</string>
+    <string name="tags_label">Tags (e.g. Civil, Retainer, High Priority)</string>
+    <string name="notes_label">Confidential Internal Notes</string>
+    <string name="save_client_record">Save Client Record</string>
 </resources>
