@@ -62,6 +62,8 @@ fun AddEditClientScreen(
     var notes by remember { mutableStateOf("") }
 
     var nameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(clientId) {
         if (clientId != null && clientId > 0) {
@@ -199,7 +201,10 @@ fun AddEditClientScreen(
                         nameError = "Client name is required"
                         return@Button
                     }
-                    viewModel.saveClient(
+                    if (email.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(email)) {
+                        emailError = "Invalid email address"
+                        return@Button
+                    }
                         id = clientId ?: 0L,
                         fullName = fullName,
                         clientType = clientType,
