@@ -162,3 +162,11 @@ app/src/main/java/com/example/lexidesk/
 ---
 
 *Developed for Mobile Application Development (MAD) College Laboratory Assessment.*
+
+## 📦 Usage
+
+1. Open the project in Android Studio.
+2. Sync Gradle and let it download dependencies.
+3. Connect an Android device or start an emulator.
+4. Click **Run** (Shift+F10) or use `./gradlew installDebug` to install the app.
+5. Follow the on-screen onboarding to set up your profile.
