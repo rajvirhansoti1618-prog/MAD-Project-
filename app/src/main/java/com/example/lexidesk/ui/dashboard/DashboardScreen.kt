@@ -517,7 +517,7 @@ fun QuickActionButton(
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = label,
                     tint = NavyPrimary,
                     modifier = Modifier.size(16.dp)
                 )
