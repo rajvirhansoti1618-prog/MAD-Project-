@@ -142,29 +142,40 @@ fun AddEditClientScreen(
                 singleLine = true
             )
 
-            // Phone
-            OutlinedTextField(
-                value = phone,
-                onValueChange = { phone = it },
-                label = { Text(stringResource(R.string.phone_label)) },
-                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
-                isError = phoneError != null,
-                supportingText = { phoneError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+                // Phone
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = {
+                        phone = it
+                        if (phoneError != null) phoneError = null
+                    },
+                    label = { Text(stringResource(R.string.phone_label)) },
+                    leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Phone number icon") },
+                    isError = phoneError != null,
+                    supportingText = {
+                        when {
+                            phoneError != null -> Text(phoneError!!, color = MaterialTheme.colorScheme.error)
+                            else -> Text("Enter at least 7 digits", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
 
-            // Email
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text(stringResource(R.string.email_label)) },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-                isError = emailError != null,
-                supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+                // Email
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        if (emailError != null) emailError = null
+                    },
+                    label = { Text(stringResource(R.string.email_label)) },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email address icon") },
+                    isError = emailError != null,
+                    supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
 
             // Physical Address
             OutlinedTextField(
