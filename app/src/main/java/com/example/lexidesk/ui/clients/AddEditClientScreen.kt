@@ -125,7 +125,7 @@ fun AddEditClientScreen(
                     if (it.isNotBlank()) nameError = null
                 },
                 label = { Text(stringResource(R.string.full_name_label)) },
-                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Full name icon") },
                 isError = nameError != null,
                 supportingText = { nameError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
