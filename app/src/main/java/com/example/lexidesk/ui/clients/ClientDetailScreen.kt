@@ -159,6 +159,27 @@ fun ClientDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = {
+                        client?.let { c ->
+                            val shareText = buildString {
+                                appendLine("--- LexiDesk Client Contact ---")
+                                appendLine("Name: ${c.fullName}")
+                                if (c.companyName.isNotBlank()) appendLine("Company: ${c.companyName}")
+                                appendLine("Type: ${c.clientType}")
+                                if (c.phone.isNotBlank()) appendLine("Phone: ${c.phone}")
+                                if (c.email.isNotBlank()) appendLine("Email: ${c.email}")
+                                if (c.address.isNotBlank()) appendLine("Address: ${c.address}")
+                            }
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, "Client Contact: ${c.fullName}")
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share Client Info"))
+                        }
+                    }) {
+                        Icon(androidx.compose.material.icons.filled.Share, contentDescription = "Share Client")
+                    }
                     IconButton(onClick = { onEditClientClick(clientId) }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit Client")
                     }
