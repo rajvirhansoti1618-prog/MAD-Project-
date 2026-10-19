@@ -22,8 +22,10 @@ data class DashboardUiState(
     val clientCount: Int = 0,
     val activeCasesCount: Int = 0,
     val pendingTasksCount: Int = 0,
+    val completedTasksCount: Int = 0,
     val overdueTasksCount: Int = 0,
     val documentCount: Int = 0,
+    val completionRate: Float = 0f,
     val todayTasks: List<TaskEntity> = emptyList(),
     val todayReminders: List<ReminderEntity> = emptyList(),
     val upcomingCases: List<CaseEntity> = emptyList(),
@@ -44,6 +46,7 @@ class DashboardViewModel(private val app: LexiDeskApp) : ViewModel() {
         app.clientRepository.clientCount,
         app.caseRepository.activeCasesCount,
         app.taskRepository.pendingTasksCount,
+        app.taskRepository.completedTasksCount,
         app.taskRepository.getOverdueTasksCount(now),
         app.documentRepository.documentCount,
         app.taskRepository.getTasksForDate(startOfDay, endOfDay),
@@ -56,21 +59,27 @@ class DashboardViewModel(private val app: LexiDeskApp) : ViewModel() {
         val clients = params[1] as Int
         val activeCases = params[2] as Int
         val pendingTasks = params[3] as Int
-        val overdueTasks = params[4] as Int
-        val docs = params[5] as Int
-        val tTasks = params[6] as List<TaskEntity>
-        val tReminders = params[7] as List<ReminderEntity>
-        val uCases = params[8] as List<CaseEntity>
-        val allClients = params[9] as List<ClientEntity>
-        val isSampleLoaded = params[10] as Boolean
+        val completedTasks = params[4] as Int
+        val overdueTasks = params[5] as Int
+        val docs = params[6] as Int
+        val tTasks = params[7] as List<TaskEntity>
+        val tReminders = params[8] as List<ReminderEntity>
+        val uCases = params[9] as List<CaseEntity>
+        val allClients = params[10] as List<ClientEntity>
+        val isSampleLoaded = params[11] as Boolean
+
+        val totalTasks = pendingTasks + completedTasks
+        val rate = if (totalTasks > 0) completedTasks.toFloat() / totalTasks.toFloat() else 0f
 
         DashboardUiState(
             userProfile = profile,
             clientCount = clients,
             activeCasesCount = activeCases,
             pendingTasksCount = pendingTasks,
+            completedTasksCount = completedTasks,
             overdueTasksCount = overdueTasks,
             documentCount = docs,
+            completionRate = rate,
             todayTasks = tTasks,
             todayReminders = tReminders,
             upcomingCases = uCases,
