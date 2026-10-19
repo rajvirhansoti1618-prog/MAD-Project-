@@ -68,6 +68,10 @@ fun AddEditClientScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var phoneError by remember { mutableStateOf<String?>(null) }
 
+    val nameRequiredMsg = stringResource(R.string.error_name_required)
+    val invalidEmailMsg = stringResource(R.string.error_invalid_email)
+    val invalidPhoneMsg = stringResource(R.string.error_invalid_phone)
+
     LaunchedEffect(clientId) {
         if (clientId != null && clientId > 0) {
             val existing = viewModel.getClientByIdOnce(clientId)
@@ -216,16 +220,16 @@ fun AddEditClientScreen(
             Button(
                 onClick = {
                     if (fullName.isBlank()) {
-                        nameError = "Client name is required"
+                        nameError = nameRequiredMsg
                         return@Button
                     }
                     // Validate inputs
                 if (email.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(email)) {
-                    emailError = "Invalid email address"
+                    emailError = invalidEmailMsg
                     return@Button
                 }
                 if (phone.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidPhone(phone)) {
-                    phoneError = "Invalid phone number"
+                    phoneError = invalidPhoneMsg
                     return@Button
                 }
 
