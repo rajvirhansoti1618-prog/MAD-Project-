@@ -221,6 +221,28 @@ fun DashboardScreen(
                         onClick = onNavigateToTasks
                     )
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    SummaryMetricCard(
+                        title = "Vault Documents",
+                        value = state.documentCount.toString(),
+                        icon = Icons.Default.Description,
+                        iconColor = NavyPrimary,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToDocuments
+                    )
+                    SummaryMetricCard(
+                        title = "Today's Agenda",
+                        value = (state.todayTasks.size + state.todayReminders.size).toString(),
+                        icon = Icons.Default.CalendarMonth,
+                        iconColor = TealSecondary,
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToCalendar
+                    )
+                }
             }
         }
 
