@@ -9,6 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -72,12 +74,22 @@ fun LexiDeskAppShell(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 8.dp
+                ) {
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
                             icon = { screen.icon?.let { Icon(it, contentDescription = screen.title) } },
-                            label = { Text(screen.title) },
+                            label = { Text(screen.title, fontWeight = if (currentRoute == screen.route) FontWeight.Bold else FontWeight.Normal) },
                             selected = currentRoute == screen.route,
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = com.example.lexidesk.ui.theme.NavyPrimary,
+                                selectedTextColor = com.example.lexidesk.ui.theme.NavyPrimary,
+                                indicatorColor = com.example.lexidesk.ui.theme.TealSecondary.copy(alpha = 0.18f),
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
                             onClick = {
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
