@@ -221,7 +221,7 @@ fun AddEditClientScreen(
                     emailError = "Invalid email address"
                     return@Button
                 }
-                if (phone.isNotBlank() && !phone.matches(Regex("\\d{7,}"))) {
+                if (phone.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidPhone(phone)) {
                     phoneError = "Invalid phone number"
                     return@Button
                 }
