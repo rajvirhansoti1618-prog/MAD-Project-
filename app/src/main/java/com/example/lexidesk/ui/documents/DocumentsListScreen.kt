@@ -200,7 +200,7 @@ fun DocumentsListScreen(
                             onOpen = {
                                 val file = File(doc.filePath)
                                 if (file.exists()) {
-                                    PdfGenerator.viewPdf(context, file)
+                                    PdfGenerator.viewDocument(context, file, doc.fileType)
                                 }
                             },
                             onShare = {

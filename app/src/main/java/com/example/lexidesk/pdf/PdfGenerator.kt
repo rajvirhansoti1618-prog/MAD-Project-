@@ -177,4 +177,39 @@ object PdfGenerator {
             sharePdf(context, file, file.name)
         }
     }
+
+    fun viewDocument(context: Context, file: File, fileType: String = "") {
+        val uri: Uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+
+        val mimeType = when (fileType.lowercase()) {
+            "pdf" -> "application/pdf"
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "txt" -> "text/plain"
+            else -> {
+                when (file.extension.lowercase()) {
+                    "pdf" -> "application/pdf"
+                    "jpg", "jpeg" -> "image/jpeg"
+                    "png" -> "image/png"
+                    "txt" -> "text/plain"
+                    else -> "*/*"
+                }
+            }
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            sharePdf(context, file, file.name)
+        }
+    }
 }

@@ -532,7 +532,14 @@ fun ClientDetailScreen(
                         } else {
                             items(detailState.documents) { doc ->
                                 Card(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            val file = java.io.File(doc.filePath)
+                                            if (file.exists()) {
+                                                com.example.lexidesk.pdf.PdfGenerator.viewDocument(context, file, doc.fileType)
+                                            }
+                                        },
                                     shape = RoundedCornerShape(12.dp),
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                                 ) {
