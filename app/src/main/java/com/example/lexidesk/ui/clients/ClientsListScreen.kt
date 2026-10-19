@@ -254,6 +254,28 @@ fun ClientListItemCard(
                         }
                     }
                 }
+
+                if (client.tags.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        client.tags.split(",", ";").take(3).forEach { tag ->
+                            if (tag.isNotBlank()) {
+                                Surface(
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = TealSecondary.copy(alpha = 0.08f)
+                                ) {
+                                    Text(
+                                        text = "#${tag.trim()}",
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = TealSecondary,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
