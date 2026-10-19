@@ -1,5 +1,6 @@
 package com.example.lexidesk.ui.tasks
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -32,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -105,6 +108,29 @@ fun TasksListScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
+                // Priority Filter Chips
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Priority:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        val priorities = listOf("All", "Urgent", "High", "Medium", "Low")
+                        items(priorities) { prio ->
+                            FilterChip(
+                                selected = state.priorityFilter == prio,
+                                onClick = { viewModel.onPriorityFilterChanged(prio) },
+                                label = { Text(prio, fontSize = 12.sp) }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 // Sort By Chips (Due Date, Priority, Title)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -166,6 +192,7 @@ fun TaskListItemCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(14.dp),
+        border = if (isOverdue) BorderStroke(1.dp, RedUrgent.copy(alpha = 0.5f)) else null,
         colors = CardDefaults.cardColors(
             containerColor = if (isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
         ),
@@ -219,7 +246,7 @@ fun TaskListItemCard(
                     if (task.dueDate != null) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.CalendarToday,
+                                imageVector = if (isOverdue) Icons.Default.Warning else Icons.Default.CalendarToday,
                                 contentDescription = null,
                                 tint = if (isOverdue) RedUrgent else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(12.dp)
@@ -263,6 +290,7 @@ fun TaskListItemCard(
                     }
                 }
             }
-        }
+
+
     }
 }
