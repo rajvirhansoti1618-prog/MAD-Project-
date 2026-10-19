@@ -61,6 +61,8 @@ class ClientsViewModel(private val app: LexiDeskApp) : ViewModel() {
             val matchesType = when (filter) {
                 "Individual" -> client.clientType.equals("Individual", ignoreCase = true)
                 "Business" -> client.clientType.equals("Business", ignoreCase = true)
+                "Corporate" -> client.tags.contains("Corporate", ignoreCase = true) || client.clientType.equals("Business", ignoreCase = true)
+                "Retainer" -> client.tags.contains("Retainer", ignoreCase = true) || client.notes.contains("Retainer", ignoreCase = true)
                 else -> true
             }
             matchesQuery && matchesType

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -76,7 +78,7 @@ fun ClientsListScreen(
             // Header & Search
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Clients & Organizations",
+                    text = "Clients & Organizations (${state.clients.size})",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -89,8 +91,12 @@ fun ClientsListScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Filter chips
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("All", "Individual", "Business").forEach { filter ->
+                val filterScrollState = rememberScrollState()
+                Row(
+                    modifier = Modifier.horizontalScroll(filterScrollState),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("All", "Individual", "Business", "Corporate", "Retainer").forEach { filter ->
                         FilterChip(
                             selected = state.filterType == filter,
                             onClick = { viewModel.onFilterTypeChanged(filter) },
