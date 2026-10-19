@@ -64,6 +64,8 @@ fun TasksListScreen(
     onAddTaskClick: () -> Unit
 ) {
     val state by viewModel.tasksListUiState.collectAsState()
+    val clients by viewModel.clientsFlow.collectAsState()
+    val cases by viewModel.casesFlow.collectAsState()
 
     Scaffold(
         floatingActionButton = {
@@ -166,8 +168,12 @@ fun TasksListScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(state.tasks) { task ->
+                        val clientName = clients.find { it.id == task.clientId }?.fullName
+                        val caseName = cases.find { it.id == task.caseId }?.title
                         TaskListItemCard(
                             task = task,
+                            clientName = clientName,
+                            caseName = caseName,
                             onToggleComplete = { viewModel.toggleTask(task) },
                             onClick = { onTaskClick(task.id) }
                         )
@@ -181,6 +187,8 @@ fun TasksListScreen(
 @Composable
 fun TaskListItemCard(
     task: TaskEntity,
+    clientName: String? = null,
+    caseName: String? = null,
     onToggleComplete: () -> Unit,
     onClick: () -> Unit
 ) {
@@ -233,6 +241,16 @@ fun TaskListItemCard(
                         text = task.description,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
+
+                if (clientName != null || caseName != null) {
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Text(
+                        text = listOfNotNull(clientName, caseName).joinToString(" • "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1
                     )
                 }
