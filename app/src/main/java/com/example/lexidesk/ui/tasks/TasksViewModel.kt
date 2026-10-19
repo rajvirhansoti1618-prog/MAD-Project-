@@ -22,6 +22,7 @@ data class TasksListUiState(
     val searchQuery: String = "",
     val activeFilter: String = "All", // All, Today, Upcoming, Overdue, Completed
     val priorityFilter: String = "All",
+    val sortBy: String = "Due Date", // Due Date, Priority, Title
     val isLoading: Boolean = false
 )
 
@@ -35,6 +36,9 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
 
     private val _priorityFilter = MutableStateFlow("All")
     val priorityFilter: StateFlow<String> = _priorityFilter.asStateFlow()
+
+    private val _sortBy = MutableStateFlow("Due Date")
+    val sortBy: StateFlow<String> = _sortBy.asStateFlow()
 
     val clientsFlow: StateFlow<List<ClientEntity>> = app.clientRepository.allClients.stateIn(
         scope = viewModelScope,
@@ -52,8 +56,9 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
         app.taskRepository.allTasks,
         _searchQuery,
         _activeFilter,
-        _priorityFilter
-    ) { allTasks, query, filter, priority ->
+        _priorityFilter,
+        _sortBy
+    ) { allTasks, query, filter, priority, sort ->
         val now = System.currentTimeMillis()
         val startOfToday = DateUtils.getStartOfDay(now)
         val endOfToday = DateUtils.getEndOfDay(now)
@@ -74,16 +79,37 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
             }
 
             matchesQuery && matchesPriority && matchesFilter
-        }.sortedWith(
-            compareBy<TaskEntity> { it.status == "Completed" }
-                .thenBy(nullsLast()) { it.dueDate }
-        )
+        }
+
+        val sorted = when (sort) {
+            "Priority" -> filtered.sortedWith(
+                compareBy<TaskEntity> { it.status == "Completed" }
+                    .thenBy {
+                        when (it.priority.lowercase()) {
+                            "urgent" -> 0
+                            "high" -> 1
+                            "medium" -> 2
+                            "low" -> 3
+                            else -> 4
+                        }
+                    }
+            )
+            "Title" -> filtered.sortedWith(
+                compareBy<TaskEntity> { it.status == "Completed" }
+                    .thenBy { it.title.lowercase() }
+            )
+            else -> filtered.sortedWith( // "Due Date"
+                compareBy<TaskEntity> { it.status == "Completed" }
+                    .thenBy(nullsLast()) { it.dueDate }
+            )
+        }
 
         TasksListUiState(
-            tasks = filtered,
+            tasks = sorted,
             searchQuery = query,
             activeFilter = filter,
             priorityFilter = priority,
+            sortBy = sort,
             isLoading = false
         )
     }.stateIn(
@@ -95,6 +121,7 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
     fun onSearchQueryChanged(query: String) { _searchQuery.value = query }
     fun onActiveFilterChanged(filter: String) { _activeFilter.value = filter }
     fun onPriorityFilterChanged(priority: String) { _priorityFilter.value = priority }
+    fun onSortByChanged(sortBy: String) { _sortBy.value = sortBy }
 
     fun toggleTask(task: TaskEntity) {
         viewModelScope.launch {
