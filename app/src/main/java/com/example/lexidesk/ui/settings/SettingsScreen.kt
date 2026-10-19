@@ -340,20 +340,41 @@ fun SettingsScreen(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Info, contentDescription = null, tint = TealSecondary)
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text("About LexiDesk", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Info, contentDescription = null, tint = TealSecondary)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("About LexiDesk", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = TealSecondary.copy(alpha = 0.15f)
+                            ) {
+                                Text(
+                                    text = "v1.0 (Build 36)",
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TealSecondary
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "LexiDesk is a professional productivity and document management suite created for legal and financial practitioners.\n\nBuilt using Kotlin, Jetpack Compose, Material 3, Room, WorkManager, and Google ML Kit.",
+                            text = "LexiDesk is a professional offline-first productivity and document management suite created for legal and financial practitioners.\n\n• Architecture: MVVM + Repository Pattern\n• Local Database: Room Database with KSP\n• UI Framework: Jetpack Compose Material 3\n• Background Sync: WorkManager & AlarmManager\n• On-Device ML: Google ML Kit Latin Text Recognition\n• Project: Mobile Application Development (MAD)",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        OutlinedButton(onClick = { viewModel.resetOnboarding(onResetOnboarding) }) {
-                            Text("Show Welcome Onboarding", fontSize = 12.sp)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        OutlinedButton(
+                            onClick = { viewModel.resetOnboarding(onResetOnboarding) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Replay Welcome Onboarding", fontSize = 12.sp)
                         }
                     }
                 }
