@@ -99,6 +99,26 @@ fun CasesListScreen(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                // Sort selector
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Sort:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    listOf("Recent", "Due Date", "Priority").forEach { sortOption ->
+                        FilterChip(
+                            selected = state.sortBy == sortOption,
+                            onClick = { viewModel.onSortByChanged(sortOption) },
+                            label = { Text(sortOption) }
+                        )
+                    }
+                }
             }
 
             if (state.cases.isEmpty()) {
