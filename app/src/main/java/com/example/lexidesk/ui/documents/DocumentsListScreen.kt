@@ -146,6 +146,39 @@ fun DocumentsListScreen(
                         )
                     }
                 }
+
+                if (state.documents.isNotEmpty()) {
+                    val totalBytes = state.documents.sumOf { it.fileSize }
+                    val sizeFormatted = when {
+                        totalBytes > 1024 * 1024 -> String.format("%.2f MB", totalBytes / (1024.0 * 1024.0))
+                        totalBytes > 1024 -> String.format("%.1f KB", totalBytes / 1024.0)
+                        else -> "$totalBytes bytes"
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${state.documents.size} documents in vault",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "Storage: $sizeFormatted",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
             }
 
             if (state.documents.isEmpty()) {
