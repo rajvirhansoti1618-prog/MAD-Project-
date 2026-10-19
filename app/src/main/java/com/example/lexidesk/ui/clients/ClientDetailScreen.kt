@@ -65,6 +65,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.lexidesk.data.entity.NoteEntity
 import com.example.lexidesk.ui.common.ConfirmationDialog
 import com.example.lexidesk.ui.common.PriorityBadge
 import com.example.lexidesk.ui.common.StatusBadge
@@ -92,6 +93,8 @@ fun ClientDetailScreen(
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
     var showAddNoteDialog by remember { mutableStateOf(false) }
+    var noteToEdit by remember { mutableStateOf<NoteEntity?>(null) }
+    var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
 
     if (showDeleteConfirmDialog) {
         ConfirmationDialog(
@@ -103,6 +106,65 @@ fun ClientDetailScreen(
                 viewModel.deleteClient(clientId, onDeleted = onBackClick)
             },
             onDismiss = { showDeleteConfirmDialog = false }
+        )
+    }
+
+    if (noteToDelete != null) {
+        val target = noteToDelete!!
+        ConfirmationDialog(
+            title = "Delete Note?",
+            message = "Are you sure you want to delete note \"${target.title}\"?",
+            confirmText = "Delete",
+            onConfirm = {
+                viewModel.deleteNote(target)
+                noteToDelete = null
+            },
+            onDismiss = { noteToDelete = null }
+        )
+    }
+
+    if (noteToEdit != null) {
+        val target = noteToEdit!!
+        var editTitle by remember(target) { mutableStateOf(target.title) }
+        var editContent by remember(target) { mutableStateOf(target.content) }
+
+        AlertDialog(
+            onDismissRequest = { noteToEdit = null },
+            title = { Text("Edit Client Note", style = MaterialTheme.typography.titleLarge) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedTextField(
+                        value = editTitle,
+                        onValueChange = { editTitle = it },
+                        label = { Text("Note Title") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = editContent,
+                        onValueChange = { editContent = it },
+                        label = { Text("Content / Follow-up Details") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (editTitle.isNotBlank()) {
+                            viewModel.updateNote(target.copy(title = editTitle.trim(), content = editContent.trim()))
+                            noteToEdit = null
+                        }
+                    }
+                ) {
+                    Text("Update Note")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { noteToEdit = null }) {
+                    Text("Cancel")
+                }
+            }
         )
     }
 
@@ -490,7 +552,31 @@ fun ClientDetailScreen(
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                                 ) {
                                     Column(modifier = Modifier.padding(14.dp)) {
-                                        Text(note.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                note.title,
+                                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            Row {
+                                                IconButton(
+                                                    onClick = { noteToEdit = note },
+                                                    modifier = Modifier.size(32.dp)
+                                                ) {
+                                                    Icon(Icons.Default.Edit, contentDescription = "Edit Note", modifier = Modifier.size(16.dp))
+                                                }
+                                                IconButton(
+                                                    onClick = { noteToDelete = note },
+                                                    modifier = Modifier.size(32.dp)
+                                                ) {
+                                                    Icon(Icons.Default.Delete, contentDescription = "Delete Note", tint = RedUrgent, modifier = Modifier.size(16.dp))
+                                                }
+                                            }
+                                        }
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(note.content, style = MaterialTheme.typography.bodyMedium)
                                         Spacer(modifier = Modifier.height(6.dp))

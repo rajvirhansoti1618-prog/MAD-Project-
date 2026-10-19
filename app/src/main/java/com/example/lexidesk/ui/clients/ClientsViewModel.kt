@@ -176,6 +176,18 @@ class ClientsViewModel(private val app: LexiDeskApp) : ViewModel() {
         }
     }
 
+    fun updateNote(note: NoteEntity) {
+        viewModelScope.launch {
+            app.noteRepository.updateNote(note)
+        }
+    }
+
+    fun deleteNote(note: NoteEntity) {
+        viewModelScope.launch {
+            app.noteRepository.deleteNote(note)
+        }
+    }
+
     suspend fun getClientByIdOnce(id: Long): ClientEntity? {
         return app.clientRepository.getClientByIdOnce(id)
     }
