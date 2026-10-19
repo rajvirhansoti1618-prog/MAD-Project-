@@ -368,6 +368,33 @@ fun ClientDetailScreen(
                             }
                         }
                     }
+                // Client Summary Counters Card
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ClientStatChip(
+                            label = "Cases",
+                            count = detailState.cases.size,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ClientStatChip(
+                            label = "Tasks",
+                            count = detailState.tasks.size,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ClientStatChip(
+                            label = "Vault",
+                            count = detailState.documents.size,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ClientStatChip(
+                            label = "Notes",
+                            count = detailState.notes.size,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
 
                 // Tabs for Associated items
@@ -588,6 +615,35 @@ fun ClientDetailScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ClientStatChip(
+    label: String,
+    count: Int,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 10.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = count.toString(),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
