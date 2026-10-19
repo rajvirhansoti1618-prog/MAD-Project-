@@ -105,6 +105,29 @@ fun TasksListScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
+                // Priority Filter Chips
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Priority:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        val priorities = listOf("All", "Urgent", "High", "Medium", "Low")
+                        items(priorities) { prio ->
+                            FilterChip(
+                                selected = state.priorityFilter == prio,
+                                onClick = { viewModel.onPriorityFilterChanged(prio) },
+                                label = { Text(prio, fontSize = 12.sp) }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 // Sort By Chips (Due Date, Priority, Title)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
