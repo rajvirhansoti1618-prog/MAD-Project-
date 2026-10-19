@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.lexidesk.ui.common.ConfirmationDialog
 import com.example.lexidesk.ui.common.DatePickerModalDialog
 import com.example.lexidesk.ui.common.TimePickerModalDialog
@@ -77,6 +79,7 @@ fun AddEditTaskScreen(
     var dueDate by remember { mutableStateOf<Long?>(System.currentTimeMillis()) }
     var dueTime by remember { mutableStateOf("05:00 PM") }
     var reminderEnabled by remember { mutableStateOf(true) }
+    var reminderMinutesBefore by remember { mutableIntStateOf(60) }
 
     var titleError by remember { mutableStateOf<String?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -318,7 +321,7 @@ fun AddEditTaskScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text("Enable Reminder Notification", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium))
                     Text("Trigger Android notification alert before deadline", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -326,6 +329,25 @@ fun AddEditTaskScreen(
                     checked = reminderEnabled,
                     onCheckedChange = { reminderEnabled = it }
                 )
+            }
+
+            if (reminderEnabled) {
+                Column {
+                    Text("Alert Timing", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(0 to "At deadline", 15 to "15m before", 60 to "1h before", 1440 to "1d before").forEach { (mins, label) ->
+                            FilterChip(
+                                selected = reminderMinutesBefore == mins,
+                                onClick = { reminderMinutesBefore = mins },
+                                label = { Text(label, fontSize = 11.sp) }
+                            )
+                        }
+                    }
+                }
             }
 
             // Task Description
@@ -357,6 +379,7 @@ fun AddEditTaskScreen(
                         dueDate = dueDate,
                         dueTime = dueTime,
                         reminderEnabled = reminderEnabled,
+                        reminderMinutesBefore = reminderMinutesBefore,
                         onSuccess = onSaveSuccess
                     )
                 },

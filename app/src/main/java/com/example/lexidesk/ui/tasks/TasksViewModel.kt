@@ -140,6 +140,7 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
         dueDate: Long?,
         dueTime: String?,
         reminderEnabled: Boolean,
+        reminderMinutesBefore: Int = 60,
         onSuccess: (Long) -> Unit
     ) {
         viewModelScope.launch {
@@ -170,7 +171,7 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
                     description = task.description.ifBlank { "Task deadline is today." },
                     reminderType = "Assignment Deadline",
                     eventTimestamp = dueDate,
-                    minutesBefore = 60,
+                    minutesBefore = reminderMinutesBefore,
                     clientId = clientId,
                     caseId = caseId,
                     taskId = newId
