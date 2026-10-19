@@ -368,6 +368,8 @@ fun ClientDetailScreen(
                             }
                         }
                     }
+                }
+
                 // Client Summary Counters Card
                 item {
                     Row(
