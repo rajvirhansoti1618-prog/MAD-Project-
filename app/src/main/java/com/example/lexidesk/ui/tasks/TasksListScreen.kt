@@ -245,7 +245,24 @@ fun TaskListItemCard(
                 }
             }
 
-            PriorityBadge(priority = task.priority)
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                PriorityBadge(priority = task.priority)
+                if (isOverdue) {
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = RedUrgent.copy(alpha = 0.15f)
+                    ) {
+                        Text(
+                            text = "OVERDUE",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = RedUrgent,
+                            fontSize = 9.sp
+                        )
+                    }
+                }
+            }
         }
     }
 }
