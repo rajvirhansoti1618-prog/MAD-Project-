@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Note
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -178,7 +179,7 @@ fun ClientDetailScreen(
                             context.startActivity(Intent.createChooser(intent, "Share Client Info"))
                         }
                     }) {
-                        Icon(androidx.compose.material.icons.filled.Share, contentDescription = "Share Client")
+                        Icon(Icons.Default.Share, contentDescription = "Share Client")
                     }
                     IconButton(onClick = { onEditClientClick(clientId) }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit Client")

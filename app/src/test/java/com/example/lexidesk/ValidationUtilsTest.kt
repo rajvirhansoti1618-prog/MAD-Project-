@@ -27,9 +27,18 @@ class ValidationUtilsTest {
     }
 
     @Test
-    fun isValidPhone_withNullOrBlank_returnsFalse() {
-        assertFalse(ValidationUtils.isValidPhone(null))
-        assertFalse(ValidationUtils.isValidPhone(""))
-        assertFalse(ValidationUtils.isValidPhone("   "))
+    fun isValidEmailFormat_withValidEmail_returnsTrue() {
+        assertTrue(ValidationUtils.isValidEmailFormat("test@example.com"))
+        assertTrue(ValidationUtils.isValidEmailFormat("advocate.sharma@lawfirm.co.in"))
+        assertTrue(ValidationUtils.isValidEmailFormat("audit.team_123@corporation.org"))
+    }
+
+    @Test
+    fun isValidEmailFormat_withInvalidEmail_returnsFalse() {
+        assertFalse(ValidationUtils.isValidEmailFormat("invalid-email"))
+        assertFalse(ValidationUtils.isValidEmailFormat("@domain.com"))
+        assertFalse(ValidationUtils.isValidEmailFormat("user@.com"))
+        assertFalse(ValidationUtils.isValidEmailFormat(null))
+        assertFalse(ValidationUtils.isValidEmailFormat(""))
     }
 }
