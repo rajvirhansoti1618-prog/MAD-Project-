@@ -12,4 +12,7 @@
     <string name="tags_label">Tags (e.g. Civil, Retainer, High Priority)</string>
     <string name="notes_label">Confidential Internal Notes</string>
     <string name="save_client_record">Save Client Record</string>
+    <string name="error_name_required">Client name is required</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_invalid_phone">Please enter a valid phone number (at least 7 digits)</string>
 </resources>
