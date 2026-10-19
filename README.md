@@ -171,6 +171,25 @@ app/src/main/java/com/example/lexidesk/
 4. Click **Run** (Shift+F10) or use `./gradlew installDebug` to install the app.
 5. Follow the on-screen onboarding to set up your profile.
 
+## 🧪 Testing & Verification
+
+LexiDesk includes unit tests verifying validation helpers and utility functions:
+
+- **Run all unit tests via Gradle:**
+  ```bash
+  ./gradlew testDebugUnitTest
+  ```
+- **Run a specific test suite:**
+  ```bash
+  ./gradlew testDebugUnitTest --tests "com.example.lexidesk.ValidationUtilsTest"
+  ./gradlew testDebugUnitTest --tests "com.example.lexidesk.DateUtilsTest"
+  ```
+- **Test reports** are generated at:
+  ```
+  app/build/reports/tests/testDebugUnitTest/index.html
+  ```
+
+
 ## 🤝 Contributing
 
 ![CI](https://github.com/rajvirhansoti1618-prog/MAD-Project-/actions/workflows/ci.yml/badge.svg)
