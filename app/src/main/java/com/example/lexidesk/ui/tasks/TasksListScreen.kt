@@ -158,9 +158,15 @@ fun TasksListScreen(
                 EmptyStateView(
                     icon = Icons.Default.Assignment,
                     title = if (state.searchQuery.isNotBlank()) "No Matching Tasks" else "No Tasks Found",
-                    description = if (state.searchQuery.isNotBlank()) "Try altering your search or active filter." else "Create actionable tasks with deadlines and notification alerts.",
-                    actionButtonText = if (state.searchQuery.isBlank()) "Create Task" else null,
-                    onActionClick = onAddTaskClick
+                    description = if (state.searchQuery.isNotBlank()) "No tasks matched '${state.searchQuery}'. Try resetting your filter or search." else "Create actionable tasks with deadlines and notification alerts.",
+                    actionButtonText = if (state.searchQuery.isNotBlank()) "Clear Search" else "Create Task",
+                    onActionClick = {
+                        if (state.searchQuery.isNotBlank()) {
+                            viewModel.onSearchQueryChanged("")
+                        } else {
+                            onAddTaskClick()
+                        }
+                    }
                 )
             } else {
                 LazyColumn(
