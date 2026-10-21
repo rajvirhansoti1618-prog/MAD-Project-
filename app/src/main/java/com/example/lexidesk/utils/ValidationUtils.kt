@@ -19,10 +19,15 @@ object ValidationUtils {
     }
 
     /**
-     * Returns true if the given phone number contains at least 7 digits.
+     * Returns true if the given phone number contains a valid format with at least 7 digits.
+     * Supports optional '+' prefix, digits, spaces, and hyphens.
      */
     fun isValidPhone(phone: String?): Boolean {
-        return !phone.isNullOrBlank() && phone.matches(Regex("\\d{7,}"))
+        if (phone.isNullOrBlank()) return false
+        val clean = phone.trim()
+        val digitsOnly = clean.filter { it.isDigit() }
+        if (digitsOnly.length < 7 || digitsOnly.length > 15) return false
+        return clean.matches(Regex("^\\+?[0-9\\-\\s]+$"))
     }
 
     /**
