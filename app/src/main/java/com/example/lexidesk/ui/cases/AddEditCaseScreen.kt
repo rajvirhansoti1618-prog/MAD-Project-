@@ -43,8 +43,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.lexidesk.R
 import com.example.lexidesk.ui.common.DatePickerModalDialog
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.utils.DateUtils
@@ -59,6 +61,7 @@ fun AddEditCaseScreen(
     onSaveSuccess: (Long) -> Unit
 ) {
     val clients by viewModel.clientsFlow.collectAsState()
+    val context = LocalContext.current
 
     var selectedClientId by remember { mutableStateOf<Long?>(initialClientId) }
     var title by remember { mutableStateOf("") }
@@ -333,11 +336,11 @@ fun AddEditCaseScreen(
             Button(
                 onClick = {
                     if (title.isBlank()) {
-                        titleError = "Case title is required"
+                        titleError = context.getString(R.string.error_case_title_required)
                         return@Button
                     }
                     if (referenceNumber.isNotBlank() && referenceNumber.length < 3) {
-                        referenceNumberError = "Reference number must be at least 3 characters"
+                        referenceNumberError = context.getString(R.string.error_case_ref_length)
                         return@Button
                     }
                     viewModel.saveCase(
