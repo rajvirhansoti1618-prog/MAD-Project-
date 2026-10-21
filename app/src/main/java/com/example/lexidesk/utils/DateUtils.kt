@@ -89,4 +89,26 @@ object DateUtils {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
+
+    /**
+     * Formats a timestamp into a relative day representation ("Today", "Tomorrow", "Yesterday"),
+     * or defaults to standard formatted date if outside immediate range.
+     */
+    fun getRelativeDayString(timestamp: Long?, fromTime: Long = System.currentTimeMillis()): String {
+        if (timestamp == null || timestamp == 0L) return "Not set"
+        val targetCal = Calendar.getInstance().apply { timeInMillis = timestamp }
+        val baseCal = Calendar.getInstance().apply { timeInMillis = fromTime }
+
+        val targetYear = targetCal.get(Calendar.YEAR)
+        val baseYear = baseCal.get(Calendar.YEAR)
+        val targetDay = targetCal.get(Calendar.DAY_OF_YEAR)
+        val baseDay = baseCal.get(Calendar.DAY_OF_YEAR)
+
+        return when {
+            targetYear == baseYear && targetDay == baseDay -> "Today"
+            targetYear == baseYear && targetDay == baseDay + 1 -> "Tomorrow"
+            targetYear == baseYear && targetDay == baseDay - 1 -> "Yesterday"
+            else -> formatDate(timestamp)
+        }
+    }
 }
