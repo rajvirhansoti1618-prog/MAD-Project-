@@ -15,6 +15,14 @@ class ValidationUtilsTest {
     }
 
     @Test
+    fun isValidPhone_withInternationalAndDelimiters_returnsTrue() {
+        assertTrue(ValidationUtils.isValidPhone("+919876543210"))
+        assertTrue(ValidationUtils.isValidPhone("+1 555-0199"))
+        assertTrue(ValidationUtils.isValidPhone("+44 20 7946 0919"))
+        assertTrue(ValidationUtils.isValidPhone("022-26543210"))
+    }
+
+    @Test
     fun isValidPhone_withShortLength_returnsFalse() {
         assertFalse(ValidationUtils.isValidPhone("123456"))
         assertFalse(ValidationUtils.isValidPhone("1"))
