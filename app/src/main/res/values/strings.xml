@@ -27,4 +27,9 @@
     <string name="label_no_due_date">No due date set</string>
     <string name="label_overdue">Overdue</string>
     <string name="label_due_today">Due today</string>
+    <!-- Document operations and feedback -->
+    <string name="error_file_not_found">Document file not found on device storage</string>
+    <string name="action_open_document">Open document</string>
+    <string name="action_share_document">Share document</string>
+    <string name="action_delete_document">Delete document</string>
 </resources>
