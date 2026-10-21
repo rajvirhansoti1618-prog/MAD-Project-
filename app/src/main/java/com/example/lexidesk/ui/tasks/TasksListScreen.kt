@@ -144,7 +144,7 @@ fun TasksListScreen(
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    listOf("Due Date", "Priority", "Title").forEach { sortOption ->
+                    listOf("Due Date", "Priority", "Title", "Newest").forEach { sortOption ->
                         FilterChip(
                             selected = state.sortBy == sortOption,
                             onClick = { viewModel.onSortByChanged(sortOption) },

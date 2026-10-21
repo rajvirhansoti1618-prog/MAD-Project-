@@ -90,6 +90,10 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
                 compareBy<TaskEntity> { it.status == "Completed" }
                     .thenBy { it.title.lowercase() }
             )
+            "Newest" -> filtered.sortedWith(
+                compareBy<TaskEntity> { it.status == "Completed" }
+                    .thenByDescending { it.createdAt }
+            )
             else -> filtered.sortedWith( // "Due Date"
                 compareBy<TaskEntity> { it.status == "Completed" }
                     .thenBy(nullsLast()) { it.dueDate }
