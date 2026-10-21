@@ -55,4 +55,16 @@ class ValidationUtilsTest {
         assertFalse(ValidationUtils.isValidTitle("   ", 2))
         assertFalse(ValidationUtils.isValidTitle(null, 2))
     }
+
+    @Test
+    fun isValidTitle_withWhitespacePadding_trimsCorrectly() {
+        assertTrue(ValidationUtils.isValidTitle("   ab   ", 2))
+        assertFalse(ValidationUtils.isValidTitle("   a   ", 2))
+        assertTrue(ValidationUtils.isValidTitle("M/s ABC Corp v. State (2026)", 5))
+    }
+
+    @Test
+    fun isValidEmailFormat_withSubdomains_returnsTrue() {
+        assertTrue(ValidationUtils.isValidEmailFormat("partner@mail.delhi.lawfirm.in"))
+    }
 }
