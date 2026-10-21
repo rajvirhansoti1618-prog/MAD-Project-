@@ -75,4 +75,22 @@ class ValidationUtilsTest {
     fun isValidEmailFormat_withSubdomains_returnsTrue() {
         assertTrue(ValidationUtils.isValidEmailFormat("partner@mail.delhi.lawfirm.in"))
     }
+
+    @Test
+    fun isValidPostalCode_withValidCodes_returnsTrue() {
+        assertTrue(ValidationUtils.isValidPostalCode("90210"))
+        assertTrue(ValidationUtils.isValidPostalCode("110001"))
+        assertTrue(ValidationUtils.isValidPostalCode("SW1A 1AA"))
+        assertTrue(ValidationUtils.isValidPostalCode("K1A-0B1"))
+        assertTrue(ValidationUtils.isValidPostalCode("100-0001"))
+    }
+
+    @Test
+    fun isValidPostalCode_withInvalidCodes_returnsFalse() {
+        assertFalse(ValidationUtils.isValidPostalCode(""))
+        assertFalse(ValidationUtils.isValidPostalCode(null))
+        assertFalse(ValidationUtils.isValidPostalCode("12"))
+        assertFalse(ValidationUtils.isValidPostalCode("1234567890123"))
+        assertFalse(ValidationUtils.isValidPostalCode("90210#@!"))
+    }
 }
