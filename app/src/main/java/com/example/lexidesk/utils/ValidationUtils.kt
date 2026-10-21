@@ -48,4 +48,13 @@ object ValidationUtils {
         if (alphanumericOnly.length < 3 || alphanumericOnly.length > 10) return false
         return clean.matches(Regex("^[A-Za-z0-9]+([\\s\\-][A-Za-z0-9]+)?$"))
     }
+
+    /**
+     * Returns true if the given URL has a recognizable scheme (http or https) and a non-blank host.
+     */
+    fun isValidUrl(url: String?): Boolean {
+        if (url.isNullOrBlank()) return false
+        val trimmed = url.trim()
+        return trimmed.matches(Regex("^https?://[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=%]+$"))
+    }
 }
