@@ -59,4 +59,14 @@ object DateUtils {
         }
         return cal.timeInMillis
     }
+
+    /**
+     * Calculates the number of days remaining until the target timestamp from current time.
+     * Returns negative values if the deadline has already passed.
+     */
+    fun daysUntil(timestamp: Long?, fromTime: Long = System.currentTimeMillis()): Long? {
+        if (timestamp == null) return null
+        val diffMillis = timestamp - fromTime
+        return diffMillis / (24 * 60 * 60 * 1000L)
+    }
 }
