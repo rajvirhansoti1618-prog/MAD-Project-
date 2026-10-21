@@ -69,4 +69,13 @@ object DateUtils {
         val diffMillis = timestamp - fromTime
         return diffMillis / (24 * 60 * 60 * 1000L)
     }
+
+    /**
+     * Checks if a target timestamp falls within the upcoming number of specified days.
+     */
+    fun isWithinDays(timestamp: Long?, days: Int, fromTime: Long = System.currentTimeMillis()): Boolean {
+        if (timestamp == null || days <= 0) return false
+        val maxTime = fromTime + (days * 24 * 60 * 60 * 1000L)
+        return timestamp in fromTime..maxTime
+    }
 }
