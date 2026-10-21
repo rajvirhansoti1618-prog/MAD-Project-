@@ -224,7 +224,7 @@ fun TaskListItemCard(
             ) {
                 Icon(
                     imageVector = if (isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = "Toggle completion",
+                    contentDescription = if (isCompleted) "Mark task as pending" else "Mark task as completed",
                     tint = if (isCompleted) GreenSuccess else MaterialTheme.colorScheme.outline
                 )
             }
