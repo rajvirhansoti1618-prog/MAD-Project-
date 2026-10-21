@@ -109,4 +109,40 @@ class DateUtilsTest {
         assertFalse(DateUtils.isSameDay(null, today))
         assertFalse(DateUtils.isSameDay(null, null))
     }
+
+    @Test
+    fun getRelativeDayString_withToday_returnsToday() {
+        val now = 1700000000000L
+        assertEquals("Today", DateUtils.getRelativeDayString(now, fromTime = now))
+    }
+
+    @Test
+    fun getRelativeDayString_withTomorrow_returnsTomorrow() {
+        val nowCal = Calendar.getInstance()
+        val baseTime = nowCal.timeInMillis
+        val tomorrowTime = Calendar.getInstance().apply {
+            timeInMillis = baseTime
+            add(Calendar.DAY_OF_YEAR, 1)
+        }.timeInMillis
+
+        assertEquals("Tomorrow", DateUtils.getRelativeDayString(tomorrowTime, fromTime = baseTime))
+    }
+
+    @Test
+    fun getRelativeDayString_withYesterday_returnsYesterday() {
+        val nowCal = Calendar.getInstance()
+        val baseTime = nowCal.timeInMillis
+        val yesterdayTime = Calendar.getInstance().apply {
+            timeInMillis = baseTime
+            add(Calendar.DAY_OF_YEAR, -1)
+        }.timeInMillis
+
+        assertEquals("Yesterday", DateUtils.getRelativeDayString(yesterdayTime, fromTime = baseTime))
+    }
+
+    @Test
+    fun getRelativeDayString_withNullOrZero_returnsNotSet() {
+        assertEquals("Not set", DateUtils.getRelativeDayString(null))
+        assertEquals("Not set", DateUtils.getRelativeDayString(0L))
+    }
 }
