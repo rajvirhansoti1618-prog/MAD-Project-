@@ -121,7 +121,7 @@ fun DocumentsListScreen(
                         onClick = onScannerClick,
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.CameraAlt, contentDescription = "Scan document with camera OCR", modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Scan OCR", fontSize = 12.sp)
                     }
@@ -281,7 +281,7 @@ fun DocumentListItemCard(
                 IconButton(onClick = onShare) {
                     Icon(
                         imageVector = Icons.Default.Share,
-                        contentDescription = "Share",
+                        contentDescription = "Share document",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
@@ -289,7 +289,7 @@ fun DocumentListItemCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = "Delete document",
                         tint = RedUrgent,
                         modifier = Modifier.size(20.dp)
                     )
