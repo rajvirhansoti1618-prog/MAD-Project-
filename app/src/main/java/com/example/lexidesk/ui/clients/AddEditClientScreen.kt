@@ -226,33 +226,36 @@ fun AddEditClientScreen(
             // Save Button
             Button(
                 onClick = {
-                    if (fullName.isBlank()) {
+                    val trimmedName = fullName.trim()
+                    val trimmedEmail = email.trim()
+                    val trimmedPhone = phone.trim()
+
+                    if (trimmedName.isBlank()) {
                         nameError = nameRequiredMsg
                         return@Button
                     }
-                    // Validate inputs
-                if (email.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(email)) {
-                    emailError = invalidEmailMsg
-                    return@Button
-                }
-                if (phone.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidPhone(phone)) {
-                    phoneError = invalidPhoneMsg
-                    return@Button
-                }
+                    if (trimmedEmail.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(trimmedEmail)) {
+                        emailError = invalidEmailMsg
+                        return@Button
+                    }
+                    if (trimmedPhone.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidPhone(trimmedPhone)) {
+                        phoneError = invalidPhoneMsg
+                        return@Button
+                    }
 
-                // Save client
-                viewModel.saveClient(
-                    id = clientId ?: 0L,
-                    fullName = fullName,
-                    clientType = clientType,
-                    phone = phone,
-                    email = email,
-                    address = address,
-                    companyName = companyName,
-                    notes = notes,
-                    tags = tags,
-                    onSuccess = onSaveSuccess
-                )
+                    // Save client
+                    viewModel.saveClient(
+                        id = clientId ?: 0L,
+                        fullName = trimmedName,
+                        clientType = clientType,
+                        phone = trimmedPhone,
+                        email = trimmedEmail,
+                        address = address.trim(),
+                        companyName = companyName.trim(),
+                        notes = notes,
+                        tags = tags,
+                        onSuccess = onSaveSuccess
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
