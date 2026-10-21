@@ -37,4 +37,15 @@ object ValidationUtils {
         return !title.isNullOrBlank() && title.trim().length >= minLength
     }
 
+    /**
+     * Returns true if the given postal/ZIP code has a valid format (between 3 and 10 alphanumeric characters,
+     * optional space or hyphen, e.g. "90210", "110001", "SW1A 1AA", "K1A-0B1").
+     */
+    fun isValidPostalCode(code: String?): Boolean {
+        if (code.isNullOrBlank()) return false
+        val clean = code.trim()
+        val alphanumericOnly = clean.filter { it.isLetterOrDigit() }
+        if (alphanumericOnly.length < 3 || alphanumericOnly.length > 10) return false
+        return clean.matches(Regex("^[A-Za-z0-9]+([\\s\\-][A-Za-z0-9]+)?$"))
+    }
 }
