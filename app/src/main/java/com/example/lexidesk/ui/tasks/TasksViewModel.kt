@@ -84,15 +84,7 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
         val sorted = when (sort) {
             "Priority" -> filtered.sortedWith(
                 compareBy<TaskEntity> { it.status == "Completed" }
-                    .thenBy {
-                        when (it.priority.lowercase()) {
-                            "urgent" -> 0
-                            "high" -> 1
-                            "medium" -> 2
-                            "low" -> 3
-                            else -> 4
-                        }
-                    }
+                    .thenByDescending { it.priorityWeight }
             )
             "Title" -> filtered.sortedWith(
                 compareBy<TaskEntity> { it.status == "Completed" }
