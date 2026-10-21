@@ -337,14 +337,18 @@ fun ClientDetailScreen(
                                 if (client.phone.isNotBlank()) {
                                     Button(
                                         onClick = {
-                                            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${client.phone}"))
-                                            context.startActivity(dialIntent)
+                                            try {
+                                                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${client.phone.trim()}"))
+                                                context.startActivity(dialIntent)
+                                            } catch (e: Exception) {
+                                                android.widget.Toast.makeText(context, "Unable to launch dialer", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
                                         },
                                         modifier = Modifier.weight(1f),
                                         shape = RoundedCornerShape(10.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
                                     ) {
-                                        Icon(Icons.Default.Phone, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Phone, contentDescription = "Call ${client.fullName}", modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text("Call", fontSize = 13.sp)
                                     }
@@ -353,14 +357,18 @@ fun ClientDetailScreen(
                                 if (client.email.isNotBlank()) {
                                     Button(
                                         onClick = {
-                                            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:${client.email}"))
-                                            context.startActivity(emailIntent)
+                                            try {
+                                                val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:${client.email.trim()}"))
+                                                context.startActivity(emailIntent)
+                                            } catch (e: Exception) {
+                                                android.widget.Toast.makeText(context, "Unable to launch email client", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
                                         },
                                         modifier = Modifier.weight(1f),
                                         shape = RoundedCornerShape(10.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = TealSecondary)
                                     ) {
-                                        Icon(Icons.Default.Email, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Email, contentDescription = "Email ${client.fullName}", modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text("Email", fontSize = 13.sp)
                                     }
