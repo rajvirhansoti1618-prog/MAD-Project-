@@ -422,7 +422,7 @@ fun DashboardScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
-                            contentDescription = null,
+                            contentDescription = "${reminder.reminderType} reminder",
                             tint = AmberAccent,
                             modifier = Modifier.size(18.dp)
                         )
@@ -462,7 +462,7 @@ fun DashboardScreen(
                     ) {
                         Icon(
                             imageVector = if (task.status == "Completed") Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                            contentDescription = "Toggle status",
+                            contentDescription = if (task.status == "Completed") "Mark task as pending" else "Mark task as completed",
                             tint = if (task.status == "Completed") GreenSuccess else MaterialTheme.colorScheme.outline
                         )
                     }
