@@ -63,6 +63,7 @@ import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.RedUrgent
 import com.example.lexidesk.ui.theme.TealSecondary
 import com.example.lexidesk.utils.DateUtils
+import com.example.lexidesk.utils.FileUtils
 import java.io.File
 
 @Composable
@@ -149,11 +150,7 @@ fun DocumentsListScreen(
 
                 if (state.documents.isNotEmpty()) {
                     val totalBytes = state.documents.sumOf { it.fileSize }
-                    val sizeFormatted = when {
-                        totalBytes > 1024 * 1024 -> String.format("%.2f MB", totalBytes / (1024.0 * 1024.0))
-                        totalBytes > 1024 -> String.format("%.1f KB", totalBytes / 1024.0)
-                        else -> "$totalBytes bytes"
-                    }
+                    val sizeFormatted = FileUtils.formatFileSize(totalBytes)
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
                         shape = RoundedCornerShape(8.dp),
