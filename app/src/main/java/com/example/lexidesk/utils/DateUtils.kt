@@ -78,4 +78,15 @@ object DateUtils {
         val maxTime = fromTime + (days * 24 * 60 * 60 * 1000L)
         return timestamp in fromTime..maxTime
     }
+
+    /**
+     * Checks if two epoch millisecond timestamps fall on the exact same calendar day.
+     */
+    fun isSameDay(timestamp1: Long?, timestamp2: Long?): Boolean {
+        if (timestamp1 == null || timestamp2 == null) return false
+        val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
+        val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
 }
