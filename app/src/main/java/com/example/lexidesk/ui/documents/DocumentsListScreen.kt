@@ -185,9 +185,15 @@ fun DocumentsListScreen(
                 EmptyStateView(
                     icon = Icons.Default.Description,
                     title = if (state.searchQuery.isNotBlank()) "No Matching Documents" else "Vault is Empty",
-                    description = if (state.searchQuery.isNotBlank()) "Try resetting your search query or category." else "Import client PDFs, scanned contracts, or agreements into app storage.",
-                    actionButtonText = if (state.searchQuery.isBlank()) "Import Document" else null,
-                    onActionClick = onAddDocumentClick
+                    description = if (state.searchQuery.isNotBlank()) "No documents matched '${state.searchQuery}'. Try resetting your search query or category." else "Import client PDFs, scanned contracts, or agreements into app storage.",
+                    actionButtonText = if (state.searchQuery.isNotBlank()) "Clear Search" else "Import Document",
+                    onActionClick = {
+                        if (state.searchQuery.isNotBlank()) {
+                            viewModel.onSearchQueryChanged("")
+                        } else {
+                            onAddDocumentClick()
+                        }
+                    }
                 )
             } else {
                 LazyColumn(
