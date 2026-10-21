@@ -41,4 +41,18 @@ class ValidationUtilsTest {
         assertFalse(ValidationUtils.isValidEmailFormat(null))
         assertFalse(ValidationUtils.isValidEmailFormat(""))
     }
+
+    @Test
+    fun isValidTitle_withValidString_returnsTrue() {
+        assertTrue(ValidationUtils.isValidTitle("Client Case", 2))
+        assertTrue(ValidationUtils.isValidTitle("Tax Audit", 3))
+    }
+
+    @Test
+    fun isValidTitle_withShortOrBlank_returnsFalse() {
+        assertFalse(ValidationUtils.isValidTitle("a", 2))
+        assertFalse(ValidationUtils.isValidTitle("", 2))
+        assertFalse(ValidationUtils.isValidTitle("   ", 2))
+        assertFalse(ValidationUtils.isValidTitle(null, 2))
+    }
 }
