@@ -120,7 +120,7 @@ fun DashboardScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
+                        contentDescription = "Open global search",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
