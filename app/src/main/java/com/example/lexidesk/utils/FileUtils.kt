@@ -20,4 +20,26 @@ object FileUtils {
             else -> "$bytes B"
         }
     }
+
+    /**
+     * Extracts lowercase file extension from a file name or path without the leading dot.
+     * Returns empty string if no extension is found or fileName is null/blank.
+     */
+    fun getFileExtension(fileName: String?): String {
+        if (fileName.isNullOrBlank()) return ""
+        val cleanName = fileName.substringAfterLast('/').substringAfterLast('\\')
+        val dotIndex = cleanName.lastIndexOf('.')
+        return if (dotIndex > 0 && dotIndex < cleanName.length - 1) {
+            cleanName.substring(dotIndex + 1).lowercase(Locale.US)
+        } else {
+            ""
+        }
+    }
+
+    /**
+     * Checks if a given file name or path has a .pdf extension.
+     */
+    fun isPdf(fileName: String?): Boolean {
+        return getFileExtension(fileName) == "pdf"
+    }
 }
