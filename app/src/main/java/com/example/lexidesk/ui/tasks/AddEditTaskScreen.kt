@@ -47,7 +47,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.lexidesk.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lexidesk.ui.common.ConfirmationDialog
@@ -82,6 +84,7 @@ fun AddEditTaskScreen(
     var reminderMinutesBefore by remember { mutableIntStateOf(60) }
 
     var titleError by remember { mutableStateOf<String?>(null) }
+    val taskTitleRequiredMsg = stringResource(R.string.error_task_title_required)
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
