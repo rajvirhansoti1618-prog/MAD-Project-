@@ -59,4 +59,27 @@ class DateUtilsTest {
     fun daysUntil_withNullTimestamp_returnsNull() {
         assertEquals(null, DateUtils.daysUntil(null))
     }
+
+    @Test
+    fun isWithinDays_withTimestampInsideWindow_returnsTrue() {
+        val now = 1000000000L
+        val target = now + (2 * 24 * 60 * 60 * 1000L) // 2 days in future
+        assertTrue(DateUtils.isWithinDays(target, days = 3, fromTime = now))
+    }
+
+    @Test
+    fun isWithinDays_withTimestampOutsideWindow_returnsFalse() {
+        val now = 1000000000L
+        val target = now + (5 * 24 * 60 * 60 * 1000L) // 5 days in future
+        assertFalse(DateUtils.isWithinDays(target, days = 3, fromTime = now))
+    }
+
+    @Test
+    fun isWithinDays_withPastTimestampOrZeroDays_returnsFalse() {
+        val now = 1000000000L
+        val past = now - 1000L
+        assertFalse(DateUtils.isWithinDays(past, days = 3, fromTime = now))
+        assertFalse(DateUtils.isWithinDays(now + 1000L, days = 0, fromTime = now))
+        assertFalse(DateUtils.isWithinDays(null, days = 3, fromTime = now))
+    }
 }
