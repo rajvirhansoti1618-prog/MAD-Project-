@@ -82,4 +82,31 @@ class DateUtilsTest {
         assertFalse(DateUtils.isWithinDays(now + 1000L, days = 0, fromTime = now))
         assertFalse(DateUtils.isWithinDays(null, days = 3, fromTime = now))
     }
+
+    @Test
+    fun isSameDay_withSameCalendarDay_returnsTrue() {
+        val cal = Calendar.getInstance()
+        val morning = cal.apply {
+            set(Calendar.HOUR_OF_DAY, 9)
+            set(Calendar.MINUTE, 0)
+        }.timeInMillis
+        val evening = cal.apply {
+            set(Calendar.HOUR_OF_DAY, 18)
+            set(Calendar.MINUTE, 30)
+        }.timeInMillis
+
+        assertTrue(DateUtils.isSameDay(morning, evening))
+    }
+
+    @Test
+    fun isSameDay_withDifferentDaysOrNull_returnsFalse() {
+        val cal = Calendar.getInstance()
+        val today = cal.timeInMillis
+        val tomorrow = cal.apply { add(Calendar.DAY_OF_YEAR, 1) }.timeInMillis
+
+        assertFalse(DateUtils.isSameDay(today, tomorrow))
+        assertFalse(DateUtils.isSameDay(today, null))
+        assertFalse(DateUtils.isSameDay(null, today))
+        assertFalse(DateUtils.isSameDay(null, null))
+    }
 }
