@@ -41,7 +41,7 @@ data class TaskEntity(
     val reminderEnabled: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 ) {
-    @Ignore
+    @get:Ignore
     val priorityWeight: Int
         get() = when (priority.trim().lowercase()) {
             "urgent" -> 4
