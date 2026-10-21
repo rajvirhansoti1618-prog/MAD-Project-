@@ -72,6 +72,7 @@ fun AddEditCaseScreen(
     var description by remember { mutableStateOf("") }
 
     var titleError by remember { mutableStateOf<String?>(null) }
+    var referenceNumberError by remember { mutableStateOf<String?>(null) }
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showDueDatePicker by remember { mutableStateOf(false) }
 
@@ -236,8 +237,13 @@ fun AddEditCaseScreen(
             // Reference Number
             OutlinedTextField(
                 value = referenceNumber,
-                onValueChange = { referenceNumber = it },
+                onValueChange = {
+                    referenceNumber = it
+                    if (referenceNumberError != null) referenceNumberError = null
+                },
                 label = { Text("Case Ref # / Court Docket No. / Project Code") },
+                isError = referenceNumberError != null,
+                supportingText = { referenceNumberError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -328,6 +334,10 @@ fun AddEditCaseScreen(
                 onClick = {
                     if (title.isBlank()) {
                         titleError = "Case title is required"
+                        return@Button
+                    }
+                    if (referenceNumber.isNotBlank() && referenceNumber.length < 3) {
+                        referenceNumberError = "Reference number must be at least 3 characters"
                         return@Button
                     }
                     viewModel.saveCase(
