@@ -47,4 +47,16 @@ class DateUtilsTest {
         val future = System.currentTimeMillis() + (5 * 24 * 60 * 60 * 1000L)
         assertFalse(DateUtils.isOverdue(future))
     }
+
+    @Test
+    fun daysUntil_withFutureTimestamp_returnsPositiveDays() {
+        val now = 1000000000L
+        val target = now + (3 * 24 * 60 * 60 * 1000L)
+        assertEquals(3L, DateUtils.daysUntil(target, now))
+    }
+
+    @Test
+    fun daysUntil_withNullTimestamp_returnsNull() {
+        assertEquals(null, DateUtils.daysUntil(null))
+    }
 }
