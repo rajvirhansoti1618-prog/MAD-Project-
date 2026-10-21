@@ -2,6 +2,8 @@ package com.example.lexidesk.ui.documents
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
+import com.example.lexidesk.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -204,12 +206,16 @@ fun DocumentsListScreen(
                                 val file = File(doc.filePath)
                                 if (file.exists()) {
                                     PdfGenerator.viewDocument(context, file, doc.fileType)
+                                } else {
+                                    Toast.makeText(context, context.getString(R.string.error_file_not_found), Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onShare = {
                                 val file = File(doc.filePath)
                                 if (file.exists()) {
                                     PdfGenerator.sharePdf(context, file, doc.title)
+                                } else {
+                                    Toast.makeText(context, context.getString(R.string.error_file_not_found), Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onDelete = { docToDelete = doc }
