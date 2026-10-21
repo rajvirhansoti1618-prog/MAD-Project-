@@ -39,4 +39,28 @@ class FileUtilsTest {
         assertEquals("1.00 GB", FileUtils.formatFileSize(oneGb))
         assertEquals("2.50 GB", FileUtils.formatFileSize((2.5 * oneGb).toLong()))
     }
+
+    @Test
+    fun getFileExtension_withStandardExtensions_returnsLowercaseExtension() {
+        assertEquals("pdf", FileUtils.getFileExtension("document.pdf"))
+        assertEquals("pdf", FileUtils.getFileExtension("CASE_REPORT.PDF"))
+        assertEquals("png", FileUtils.getFileExtension("/storage/emulated/0/evidence.png"))
+        assertEquals("docx", FileUtils.getFileExtension("C:\\Users\\doc.final.docx"))
+    }
+
+    @Test
+    fun getFileExtension_withoutExtensionOrInvalid_returnsEmpty() {
+        assertEquals("", FileUtils.getFileExtension("filename_without_extension"))
+        assertEquals("", FileUtils.getFileExtension(".gitignore"))
+        assertEquals("", FileUtils.getFileExtension(""))
+        assertEquals("", FileUtils.getFileExtension(null))
+    }
+
+    @Test
+    fun isPdf_detectsPdfCorrectly() {
+        org.junit.Assert.assertTrue(FileUtils.isPdf("motion.pdf"))
+        org.junit.Assert.assertTrue(FileUtils.isPdf("BRIEF.PDF"))
+        org.junit.Assert.assertFalse(FileUtils.isPdf("photo.jpg"))
+        org.junit.Assert.assertFalse(FileUtils.isPdf(null))
+    }
 }
