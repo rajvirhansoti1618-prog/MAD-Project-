@@ -175,6 +175,9 @@ app/src/main/java/com/example/lexidesk/
 
 LexiDesk includes unit tests verifying validation helpers and utility functions:
 
+- **Validation Utilities (`ValidationUtilsTest`)**: Covers client name, email, phone formatting, and matter title constraints.
+- **Date & Deadline Utilities (`DateUtilsTest`)**: Covers date formatting, overdue detection, relative `daysUntil` calculations, and `isWithinDays` window checks.
+
 - **Run all unit tests via Gradle:**
   ```bash
   ./gradlew testDebugUnitTest
