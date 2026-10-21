@@ -25,4 +25,11 @@ object ValidationUtils {
         return !phone.isNullOrBlank() && phone.matches(Regex("\\d{7,}"))
     }
 
+    /**
+     * Returns true if the given title is not blank and has at least the specified minimum length.
+     */
+    fun isValidTitle(title: String?, minLength: Int = 2): Boolean {
+        return !title.isNullOrBlank() && title.trim().length >= minLength
+    }
+
 }
