@@ -125,9 +125,15 @@ fun CasesListScreen(
                 EmptyStateView(
                     icon = Icons.Default.Folder,
                     title = if (state.searchQuery.isNotBlank()) "No Matching Cases" else "No Cases or Matters",
-                    description = if (state.searchQuery.isNotBlank()) "Try clearing your search query or filter." else "Organize legal cases, advisory projects, or audit assignments under clients.",
-                    actionButtonText = if (state.searchQuery.isBlank()) "Create Case" else null,
-                    onActionClick = onAddCaseClick
+                    description = if (state.searchQuery.isNotBlank()) "No cases matched '${state.searchQuery}'. Try clearing your search query or status filter." else "Organize legal cases, advisory projects, or audit assignments under clients.",
+                    actionButtonText = if (state.searchQuery.isNotBlank()) "Clear Search" else "Create Case",
+                    onActionClick = {
+                        if (state.searchQuery.isNotBlank()) {
+                            viewModel.onSearchQueryChanged("")
+                        } else {
+                            onAddCaseClick()
+                        }
+                    }
                 )
             } else {
                 LazyColumn(
