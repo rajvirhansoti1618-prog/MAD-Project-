@@ -13,6 +13,7 @@
     <string name="notes_label">Confidential Internal Notes</string>
     <string name="save_client_record">Save Client Record</string>
     <string name="error_name_required">Client name is required</string>
+    <string name="error_company_name_required">Company name is required for business clients</string>
     <string name="error_invalid_email">Please enter a valid email address</string>
     <string name="error_invalid_phone">Please enter a valid phone number (at least 7 digits)</string>
     <string name="error_case_title_required">Case / matter title is required</string>

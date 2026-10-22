@@ -70,10 +70,12 @@ fun AddEditClientScreen(
     var nameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var phoneError by remember { mutableStateOf<String?>(null) }
+    var companyNameError by remember { mutableStateOf<String?>(null) }
 
     val nameRequiredMsg = stringResource(R.string.error_name_required)
     val invalidEmailMsg = stringResource(R.string.error_invalid_email)
     val invalidPhoneMsg = stringResource(R.string.error_invalid_phone)
+    val companyRequiredMsg = stringResource(R.string.error_company_name_required)
 
     LaunchedEffect(clientId) {
         if (clientId != null && clientId > 0) {
@@ -146,7 +148,12 @@ fun AddEditClientScreen(
             // Company Name
             OutlinedTextField(
                 value = companyName,
-                onValueChange = { companyName = it },
+                onValueChange = {
+                    companyName = it
+                    if (companyNameError != null) companyNameError = null
+                },
+                isError = companyNameError != null,
+                supportingText = companyNameError?.let { { Text(it) } },
                 label = { Text(if (clientType == "Business") stringResource(R.string.company_name_required) else stringResource(R.string.company_name_optional)) },
                 leadingIcon = { Icon(Icons.Default.Business, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
@@ -232,6 +239,10 @@ fun AddEditClientScreen(
 
                     if (trimmedName.isBlank()) {
                         nameError = nameRequiredMsg
+                        return@Button
+                    }
+                    if (clientType == "Business" && companyName.trim().isBlank()) {
+                        companyNameError = companyRequiredMsg
                         return@Button
                     }
                     if (trimmedEmail.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(trimmedEmail)) {
