@@ -189,6 +189,18 @@ class CasesViewModel(private val app: LexiDeskApp) : ViewModel() {
         }
     }
 
+    fun updateNote(note: NoteEntity) {
+        viewModelScope.launch {
+            app.noteRepository.updateNote(note)
+        }
+    }
+
+    fun deleteNote(note: NoteEntity) {
+        viewModelScope.launch {
+            app.noteRepository.deleteNote(note)
+        }
+    }
+
     suspend fun getCaseByIdOnce(id: Long): CaseEntity? {
         return app.caseRepository.getCaseByIdOnce(id)
     }
