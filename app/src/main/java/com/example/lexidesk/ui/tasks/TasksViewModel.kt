@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import android.util.Log
 import kotlinx.coroutines.launch
 
 data class TasksListUiState(
@@ -121,7 +122,11 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
 
     fun toggleTask(task: TaskEntity) {
         viewModelScope.launch {
-            app.taskRepository.toggleTaskCompleted(task.id, task.status)
+            try {
+                app.taskRepository.toggleTaskCompleted(task.id, task.status)
+            } catch (e: Exception) {
+                Log.e("TasksViewModel", "Failed to toggle task status", e)
+            }
         }
     }
 
@@ -140,6 +145,7 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
         onSuccess: (Long) -> Unit
     ) {
         viewModelScope.launch {
+            try {
             // Preserve original createdAt when updating an existing task
             val existingCreatedAt = if (id != 0L) {
                 app.taskRepository.getTaskByIdOnce(id)?.createdAt ?: System.currentTimeMillis()
@@ -183,13 +189,20 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
             }
 
             onSuccess(newId)
+            } catch (e: Exception) {
+                Log.e("TasksViewModel", "Failed to save task", e)
+            }
         }
     }
 
     fun deleteTask(taskId: Long, onDeleted: () -> Unit) {
         viewModelScope.launch {
-            app.taskRepository.deleteTaskById(taskId)
-            onDeleted()
+            try {
+                app.taskRepository.deleteTaskById(taskId)
+                onDeleted()
+            } catch (e: Exception) {
+                Log.e("TasksViewModel", "Failed to delete task", e)
+            }
         }
     }
 
