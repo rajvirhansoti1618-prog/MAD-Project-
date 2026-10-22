@@ -255,7 +255,7 @@ fun AddEditTaskScreen(
                             text = { Text(cs.title) },
                             onClick = {
                                 selectedCaseId = cs.id
-                                clientDropdownExpanded = false
+                                caseDropdownExpanded = false
                             }
                         )
                     }
