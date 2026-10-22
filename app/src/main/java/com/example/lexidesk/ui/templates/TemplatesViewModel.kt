@@ -1,6 +1,7 @@
 package com.example.lexidesk.ui.templates
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lexidesk.LexiDeskApp
@@ -184,21 +185,25 @@ Authorized Signature
         onSaved: (Long) -> Unit
     ) {
         viewModelScope.launch {
-            val draft = DraftTemplateEntity(
-                id = id,
-                templateType = type,
-                title = title.trim(),
-                content = content,
-                clientId = clientId,
-                lastModified = System.currentTimeMillis()
-            )
-            val newId = if (id == 0L) {
-                app.draftTemplateRepository.insertDraft(draft)
-            } else {
-                app.draftTemplateRepository.updateDraft(draft)
-                id
+            try {
+                val draft = DraftTemplateEntity(
+                    id = id,
+                    templateType = type,
+                    title = title.trim(),
+                    content = content,
+                    clientId = clientId,
+                    lastModified = System.currentTimeMillis()
+                )
+                val newId = if (id == 0L) {
+                    app.draftTemplateRepository.insertDraft(draft)
+                } else {
+                    app.draftTemplateRepository.updateDraft(draft)
+                    id
+                }
+                onSaved(newId)
+            } catch (e: Exception) {
+                Log.e("TemplatesViewModel", "Failed to save draft template", e)
             }
-            onSaved(newId)
         }
     }
 
