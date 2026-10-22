@@ -575,7 +575,7 @@ fun DashboardScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Due: ${DateUtils.formatDate(caseItem.dueDate)}",
+                            text = "Due: ${DateUtils.getRelativeDayString(caseItem.dueDate)}",
                             style = MaterialTheme.typography.labelMedium,
                             color = if (DateUtils.isOverdue(caseItem.dueDate)) RedUrgent else MaterialTheme.colorScheme.onSurfaceVariant
                         )
