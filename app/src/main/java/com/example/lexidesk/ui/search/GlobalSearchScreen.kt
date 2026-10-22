@@ -111,6 +111,10 @@ fun GlobalSearchScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Type a keyword above to search everything.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
+            } else if (filteredClients.isEmpty() && filteredCases.isEmpty() && filteredTasks.isEmpty() && filteredDocs.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No results found for \"${query.trim()}\"", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             } else {
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
