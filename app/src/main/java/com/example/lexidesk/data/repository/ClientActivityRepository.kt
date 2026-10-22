@@ -60,7 +60,7 @@ class ClientActivityRepository(
             notes.forEach { n ->
                 activityList.add(
                     ClientActivity.NoteActivity(
-                        timestamp = Instant.ofEpochMilli(n.timestamp),
+                        timestamp = Instant.ofEpochMilli(n.createdAt),
                         description = "Note: ${n.title}",
                         noteId = n.id
                     )
