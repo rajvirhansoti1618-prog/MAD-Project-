@@ -80,6 +80,7 @@ fun AddEditCaseScreen(
 
     var titleError by remember { mutableStateOf<String?>(null) }
     var referenceNumberError by remember { mutableStateOf<String?>(null) }
+    var dueDateError by remember { mutableStateOf<String?>(null) }
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showDueDatePicker by remember { mutableStateOf(false) }
 
@@ -116,7 +117,10 @@ fun AddEditCaseScreen(
     if (showDueDatePicker) {
         DatePickerModalDialog(
             initialDateMillis = dueDate,
-            onDateSelected = { dueDate = it },
+            onDateSelected = {
+                dueDate = it
+                dueDateError = null
+            },
             onDismiss = { showDueDatePicker = false }
         )
     }
@@ -344,12 +348,18 @@ fun AddEditCaseScreen(
             // Save Button
             Button(
                 onClick = {
-                    if (title.isBlank()) {
+                    val cleanTitle = title.trim()
+                    val cleanRef = referenceNumber.trim()
+                    if (cleanTitle.isBlank()) {
                         titleError = context.getString(R.string.error_case_title_required)
                         return@Button
                     }
-                    if (referenceNumber.isNotBlank() && referenceNumber.length < 3) {
+                    if (cleanRef.isNotBlank() && cleanRef.length < 3) {
                         referenceNumberError = context.getString(R.string.error_case_ref_length)
+                        return@Button
+                    }
+                    if (startDate != null && dueDate != null && dueDate!! < startDate!!) {
+                        dueDateError = context.getString(R.string.error_case_due_before_start)
                         return@Button
                     }
                     viewModel.saveCase(

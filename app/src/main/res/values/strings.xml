@@ -18,6 +18,7 @@
     <string name="error_invalid_phone">Please enter a valid phone number (at least 7 digits)</string>
     <string name="error_case_title_required">Case / matter title is required</string>
     <string name="error_case_ref_length">Reference number must be at least 3 characters</string>
+    <string name="error_case_due_before_start">Due date cannot precede the start date</string>
     <string name="error_task_title_required">Task title is required</string>
     <!-- Confirmation messages -->
     <string name="confirm_delete_client">This will permanently remove the client record. This cannot be undone.</string>
