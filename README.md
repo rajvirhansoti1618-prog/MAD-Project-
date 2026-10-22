@@ -191,6 +191,7 @@ LexiDesk includes unit tests verifying validation helpers and utility functions:
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.ValidationUtilsTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.DateUtilsTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.TaskEntityTest"
+  ./gradlew testDebugUnitTest --tests "com.example.lexidesk.CaseEntityTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.FileUtilsTest"
   ```
 - **Test reports** are generated at:
@@ -208,6 +209,8 @@ LexiDesk includes unit tests verifying validation helpers and utility functions:
 | OCR scanner not working | Ensure Google Play Services ML Kit is available on the device. Not available on pure AOSP devices. |
 | Documents disappear after reinstall | Files are stored in app-private storage. They will be deleted on uninstall. Use the backup feature to export. |
 | Reminders not triggering | Check that **Alarms & Reminders** permission is granted in Android 12+ device settings. |
+| Duplicate import or syntax errors | Run `./gradlew testDebugUnitTest` to inspect compile-time errors with stacktraces. |
+| OneDrive lock (`index.lock: Permission denied`) | Exclude the project directory or run git commands from PowerShell outside cloud synchronization locks. |
 
 
 ## 🤝 Contributing
