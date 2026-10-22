@@ -96,18 +96,27 @@ object DateUtils {
      */
     fun getRelativeDayString(timestamp: Long?, fromTime: Long = System.currentTimeMillis()): String {
         if (timestamp == null || timestamp == 0L) return "Not set"
-        val targetCal = Calendar.getInstance().apply { timeInMillis = timestamp }
-        val baseCal = Calendar.getInstance().apply { timeInMillis = fromTime }
+        val targetCal = Calendar.getInstance().apply {
+            timeInMillis = timestamp
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val baseCal = Calendar.getInstance().apply {
+            timeInMillis = fromTime
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
-        val targetYear = targetCal.get(Calendar.YEAR)
-        val baseYear = baseCal.get(Calendar.YEAR)
-        val targetDay = targetCal.get(Calendar.DAY_OF_YEAR)
-        val baseDay = baseCal.get(Calendar.DAY_OF_YEAR)
+        val diffDays = ((targetCal.timeInMillis - baseCal.timeInMillis) / (24 * 60 * 60 * 1000L))
 
-        return when {
-            targetYear == baseYear && targetDay == baseDay -> "Today"
-            targetYear == baseYear && targetDay == baseDay + 1 -> "Tomorrow"
-            targetYear == baseYear && targetDay == baseDay - 1 -> "Yesterday"
+        return when (diffDays) {
+            0L -> "Today"
+            1L -> "Tomorrow"
+            -1L -> "Yesterday"
             else -> formatDate(timestamp)
         }
     }
