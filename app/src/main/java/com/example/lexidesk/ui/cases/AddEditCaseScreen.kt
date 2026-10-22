@@ -76,6 +76,7 @@ fun AddEditCaseScreen(
     var dueDate by remember { mutableStateOf<Long?>(System.currentTimeMillis() + 7 * 24 * 3600 * 1000L) }
     var courtOrLocation by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var existingNotes by remember { mutableStateOf("") }
 
     var titleError by remember { mutableStateOf<String?>(null) }
     var referenceNumberError by remember { mutableStateOf<String?>(null) }
@@ -99,6 +100,7 @@ fun AddEditCaseScreen(
                 dueDate = existing.dueDate
                 courtOrLocation = existing.courtOrLocation
                 description = existing.description
+                existingNotes = existing.notes
             }
         }
     }
@@ -362,7 +364,7 @@ fun AddEditCaseScreen(
                         startDate = startDate,
                         dueDate = dueDate,
                         courtOrLocation = courtOrLocation,
-                        notes = "",
+                        notes = existingNotes,
                         onSuccess = onSaveSuccess
                     )
                 },
