@@ -140,6 +140,12 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
         onSuccess: (Long) -> Unit
     ) {
         viewModelScope.launch {
+            // Preserve original createdAt when updating an existing task
+            val existingCreatedAt = if (id != 0L) {
+                app.taskRepository.getTaskByIdOnce(id)?.createdAt ?: System.currentTimeMillis()
+            } else {
+                System.currentTimeMillis()
+            }
             val task = TaskEntity(
                 id = id,
                 title = title.trim(),
@@ -151,7 +157,7 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
                 dueDate = dueDate,
                 dueTime = dueTime,
                 reminderEnabled = reminderEnabled,
-                createdAt = System.currentTimeMillis()
+                createdAt = existingCreatedAt
             )
             val newId = if (id == 0L) {
                 app.taskRepository.insertTask(task)
