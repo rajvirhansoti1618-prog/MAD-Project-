@@ -62,6 +62,8 @@ object BackupRestoreManager {
                         put("description", t.description)
                         put("priority", t.priority)
                         put("status", t.status)
+                        if (t.dueDate != null) put("dueDate", t.dueDate)
+                        if (t.dueTime != null) put("dueTime", t.dueTime)
                     })
                 }
                 put("tasks", tasksArray)
@@ -135,7 +137,9 @@ object BackupRestoreManager {
                             title = obj.optString("title", "Untitled Task"),
                             description = obj.optString("description", ""),
                             priority = obj.optString("priority", "Medium"),
-                            status = obj.optString("status", "Pending")
+                            status = obj.optString("status", "Pending"),
+                            dueDate = if (obj.has("dueDate")) obj.getLong("dueDate") else null,
+                            dueTime = if (obj.has("dueTime")) obj.optString("dueTime", null) else null
                         )
                     )
                     recordCount++

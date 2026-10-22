@@ -93,4 +93,27 @@ class ValidationUtilsTest {
         assertFalse(ValidationUtils.isValidPostalCode("1234567890123"))
         assertFalse(ValidationUtils.isValidPostalCode("90210#@!"))
     }
+
+    @Test
+    fun isValidUrl_withValidHttpUrls_returnsTrue() {
+        assertTrue(ValidationUtils.isValidUrl("http://example.com"))
+        assertTrue(ValidationUtils.isValidUrl("https://example.com"))
+        assertTrue(ValidationUtils.isValidUrl("https://www.example.com/path?query=1"))
+        assertTrue(ValidationUtils.isValidUrl("https://sub.domain.co.in/page#section"))
+    }
+
+    @Test
+    fun isValidUrl_withInvalidUrls_returnsFalse() {
+        assertFalse(ValidationUtils.isValidUrl("ftp://example.com"))
+        assertFalse(ValidationUtils.isValidUrl("example.com"))
+        assertFalse(ValidationUtils.isValidUrl("not a url"))
+        assertFalse(ValidationUtils.isValidUrl(""))
+        assertFalse(ValidationUtils.isValidUrl(null))
+        assertFalse(ValidationUtils.isValidUrl("   "))
+    }
+
+    @Test
+    fun isValidUrl_withWhitespacePadding_trimsCorrectly() {
+        assertTrue(ValidationUtils.isValidUrl("  https://example.com  "))
+    }
 }

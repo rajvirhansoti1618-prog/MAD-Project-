@@ -37,9 +37,10 @@ data class DashboardUiState(
 
 class DashboardViewModel(private val app: LexiDeskApp) : ViewModel() {
 
-    private val now = System.currentTimeMillis()
-    private val startOfDay = DateUtils.getStartOfDay(now)
-    private val endOfDay = DateUtils.getEndOfDay(now)
+    // Compute current time boundaries dynamically to avoid stale values after midnight
+    private fun currentTimeMillis() = System.currentTimeMillis()
+    private fun startOfDay() = DateUtils.getStartOfDay(currentTimeMillis())
+    private fun endOfDay() = DateUtils.getEndOfDay(currentTimeMillis())
 
     val uiState: StateFlow<DashboardUiState> = combine(
         app.userPreferencesRepository.userProfileFlow,
@@ -47,10 +48,10 @@ class DashboardViewModel(private val app: LexiDeskApp) : ViewModel() {
         app.caseRepository.activeCasesCount,
         app.taskRepository.pendingTasksCount,
         app.taskRepository.completedTasksCount,
-        app.taskRepository.getOverdueTasksCount(now),
+        app.taskRepository.getOverdueTasksCount(currentTimeMillis()),
         app.documentRepository.documentCount,
-        app.taskRepository.getTasksForDate(startOfDay, endOfDay),
-        app.reminderRepository.getRemindersForDate(startOfDay, endOfDay),
+        app.taskRepository.getTasksForDate(startOfDay(), endOfDay()),
+        app.reminderRepository.getRemindersForDate(startOfDay(), endOfDay()),
         app.caseRepository.getUpcomingCases(5),
         app.clientRepository.allClients,
         app.userPreferencesRepository.isSampleDataLoadedFlow
