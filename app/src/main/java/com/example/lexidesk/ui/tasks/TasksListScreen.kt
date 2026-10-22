@@ -277,7 +277,7 @@ fun TaskListItemCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "${DateUtils.formatDate(task.dueDate)}${if (task.dueTime != null) ", ${task.dueTime}" else ""}",
+                                text = "${DateUtils.getRelativeDayString(task.dueDate)}${if (task.dueTime != null) ", ${task.dueTime}" else ""}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (isOverdue) RedUrgent else MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = if (isOverdue) FontWeight.Bold else FontWeight.Normal
