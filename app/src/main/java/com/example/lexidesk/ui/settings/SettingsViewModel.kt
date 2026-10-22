@@ -1,6 +1,7 @@
 package com.example.lexidesk.ui.settings
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lexidesk.LexiDeskApp
@@ -40,15 +41,25 @@ class SettingsViewModel(private val app: LexiDeskApp) : ViewModel() {
 
     fun exportBackup(context: Context, onResult: (File?) -> Unit) {
         viewModelScope.launch {
-            val file = BackupRestoreManager.exportBackupJson(context, app)
-            onResult(file)
+            try {
+                val file = BackupRestoreManager.exportBackupJson(context, app)
+                onResult(file)
+            } catch (e: Exception) {
+                Log.e("SettingsViewModel", "Failed to export backup", e)
+                onResult(null)
+            }
         }
     }
 
     fun restoreBackup(jsonString: String, onResult: (Result<Int>) -> Unit) {
         viewModelScope.launch {
-            val res = BackupRestoreManager.restoreBackupJson(app, jsonString)
-            onResult(res)
+            try {
+                val res = BackupRestoreManager.restoreBackupJson(app, jsonString)
+                onResult(res)
+            } catch (e: Exception) {
+                Log.e("SettingsViewModel", "Failed to restore backup", e)
+                onResult(Result.failure(e))
+            }
         }
     }
 
