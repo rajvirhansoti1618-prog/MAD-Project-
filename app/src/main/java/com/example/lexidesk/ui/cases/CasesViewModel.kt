@@ -138,6 +138,12 @@ class CasesViewModel(private val app: LexiDeskApp) : ViewModel() {
     ) {
         viewModelScope.launch {
             val now = System.currentTimeMillis()
+            // Preserve original createdAt when updating an existing case
+            val existingCreatedAt = if (id != 0L) {
+                app.caseRepository.getCaseByIdOnce(id)?.createdAt ?: now
+            } else {
+                now
+            }
             val caseItem = CaseEntity(
                 id = id,
                 clientId = clientId,
@@ -151,7 +157,7 @@ class CasesViewModel(private val app: LexiDeskApp) : ViewModel() {
                 dueDate = dueDate,
                 courtOrLocation = courtOrLocation.trim(),
                 notes = notes.trim(),
-                createdAt = if (id == 0L) now else now,
+                createdAt = existingCreatedAt,
                 updatedAt = now
             )
             val newId = if (id == 0L) {
