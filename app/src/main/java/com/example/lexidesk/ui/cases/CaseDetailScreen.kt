@@ -89,7 +89,7 @@ fun CaseDetailScreen(
     if (showDeleteConfirmDialog) {
         ConfirmationDialog(
             title = "Delete Case Record?",
-            message = "Are you sure you want to permanently delete '${caseItem?.title}'?",
+            message = "Are you sure you want to permanently delete '${caseItem?.title ?: "this case"}'?",
             confirmText = "Delete Permanently",
             onConfirm = {
                 showDeleteConfirmDialog = false
