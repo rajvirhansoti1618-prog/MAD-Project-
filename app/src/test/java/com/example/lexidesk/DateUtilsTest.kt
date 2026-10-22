@@ -145,4 +145,17 @@ class DateUtilsTest {
         assertEquals("Not set", DateUtils.getRelativeDayString(null))
         assertEquals("Not set", DateUtils.getRelativeDayString(0L))
     }
+
+    @Test
+    fun getRelativeDayString_yearBoundary_handlesNewYearsEveAndDay() {
+        val dec31 = Calendar.getInstance().apply {
+            set(2025, Calendar.DECEMBER, 31, 23, 30, 0)
+        }.timeInMillis
+        val jan1 = Calendar.getInstance().apply {
+            set(2026, Calendar.JANUARY, 1, 9, 0, 0)
+        }.timeInMillis
+
+        assertEquals("Tomorrow", DateUtils.getRelativeDayString(jan1, fromTime = dec31))
+        assertEquals("Yesterday", DateUtils.getRelativeDayString(dec31, fromTime = jan1))
+    }
 }
