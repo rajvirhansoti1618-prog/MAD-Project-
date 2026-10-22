@@ -49,6 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -297,7 +299,7 @@ fun AddEditTaskScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Box(modifier = Modifier.weight(1f).clickable { showDatePicker = true }) {
+                Box(modifier = Modifier.weight(1f).clickable { showDatePicker = true }.semantics { contentDescription = "Select task due date" }) {
                     OutlinedTextField(
                         value = DateUtils.formatDate(dueDate),
                         onValueChange = {},
@@ -309,7 +311,7 @@ fun AddEditTaskScreen(
                     )
                 }
 
-                Box(modifier = Modifier.weight(1f).clickable { showTimePicker = true }) {
+                Box(modifier = Modifier.weight(1f).clickable { showTimePicker = true }.semantics { contentDescription = "Select task due time" }) {
                     OutlinedTextField(
                         value = dueTime,
                         onValueChange = {},
@@ -334,7 +336,8 @@ fun AddEditTaskScreen(
                 }
                 Switch(
                     checked = reminderEnabled,
-                    onCheckedChange = { reminderEnabled = it }
+                    onCheckedChange = { reminderEnabled = it },
+                    modifier = Modifier.semantics { contentDescription = "Toggle reminder notification" }
                 )
             }
 
