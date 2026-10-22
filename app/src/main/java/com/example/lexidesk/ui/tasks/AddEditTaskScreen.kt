@@ -372,8 +372,8 @@ fun AddEditTaskScreen(
             // Save Task Button
             Button(
                 onClick = {
-                    if (title.isBlank()) {
-                        titleError = "Task title is required"
+                    if (title.trim().isBlank()) {
+                        titleError = taskTitleRequiredMsg
                         return@Button
                     }
                     viewModel.saveTask(
