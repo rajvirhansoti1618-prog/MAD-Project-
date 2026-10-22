@@ -134,6 +134,12 @@ class ClientsViewModel(private val app: LexiDeskApp) : ViewModel() {
         onSuccess: (Long) -> Unit
     ) {
         viewModelScope.launch {
+            // Preserve original createdAt when updating an existing client
+            val existingCreatedAt = if (id != 0L) {
+                app.clientRepository.getClientByIdOnce(id)?.createdAt ?: System.currentTimeMillis()
+            } else {
+                System.currentTimeMillis()
+            }
             val client = ClientEntity(
                 id = id,
                 fullName = fullName.trim(),
@@ -144,7 +150,7 @@ class ClientsViewModel(private val app: LexiDeskApp) : ViewModel() {
                 companyName = companyName.trim(),
                 notes = notes.trim(),
                 tags = tags.trim(),
-                createdAt = if (id == 0L) System.currentTimeMillis() else System.currentTimeMillis()
+                createdAt = existingCreatedAt
             )
             val newId = if (id == 0L) {
                 app.clientRepository.insertClient(client)
