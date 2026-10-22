@@ -8,6 +8,7 @@ import com.example.lexidesk.LexiDeskApp
 import com.example.lexidesk.data.entity.CaseEntity
 import com.example.lexidesk.data.entity.ClientEntity
 import com.example.lexidesk.data.entity.DocumentEntity
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -88,40 +89,54 @@ class DocumentsViewModel(private val app: LexiDeskApp) : ViewModel() {
         onSuccess: (Long) -> Unit
     ) {
         viewModelScope.launch {
-            val (savedPath, fileName, fileSize) = withContext(Dispatchers.IO) {
+            val result = withContext(Dispatchers.IO) {
                 var name = "Document_${System.currentTimeMillis()}"
-                var size = 0L
-
-                // Copy stream to app internal storage
                 val destFile = File(context.filesDir, "doc_${System.currentTimeMillis()}.bin")
                 try {
-                    context.contentResolver.openInputStream(uri)?.use { input ->
-                        FileOutputStream(destFile).use { output ->
-                            input.copyTo(output)
+                    val stream = context.contentResolver.openInputStream(uri)
+                    if (stream != null) {
+                        stream.use { input ->
+                            FileOutputStream(destFile).use { output ->
+                                input.copyTo(output)
+                            }
                         }
+                        val size = destFile.length()
+                        name = uri.lastPathSegment?.substringAfterLast('/') ?: destFile.name
+                        Triple(destFile.absolutePath, name, size)
+                    } else {
+                        Log.e("DocumentsViewModel", "Unable to open input stream for URI: $uri")
+                        null
                     }
-                    size = destFile.length()
-                    name = uri.lastPathSegment?.substringAfterLast('/') ?: destFile.name
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.e("DocumentsViewModel", "Failed to copy imported document file", e)
+                    if (destFile.exists()) {
+                        destFile.delete()
+                    }
+                    null
                 }
-                Triple(destFile.absolutePath, name, size)
             }
 
-            val doc = DocumentEntity(
-                title = title.ifBlank { fileName },
-                fileName = fileName,
-                filePath = savedPath,
-                fileType = if (fileName.endsWith(".pdf", ignoreCase = true)) "pdf" else "image",
-                fileSize = fileSize,
-                category = category,
-                clientId = clientId,
-                caseId = caseId,
-                description = description
-            )
+            if (result != null) {
+                val (savedPath, fileName, fileSize) = result
+                val doc = DocumentEntity(
+                    title = title.ifBlank { fileName },
+                    fileName = fileName,
+                    filePath = savedPath,
+                    fileType = if (fileName.endsWith(".pdf", ignoreCase = true)) "pdf" else "image",
+                    fileSize = fileSize,
+                    category = category,
+                    clientId = clientId,
+                    caseId = caseId,
+                    description = description
+                )
 
-            val newId = app.documentRepository.insertDocument(doc)
-            onSuccess(newId)
+                try {
+                    val newId = app.documentRepository.insertDocument(doc)
+                    onSuccess(newId)
+                } catch (e: Exception) {
+                    Log.e("DocumentsViewModel", "Failed to insert document entity", e)
+                }
+            }
         }
     }
 
