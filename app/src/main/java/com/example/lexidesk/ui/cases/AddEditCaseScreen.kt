@@ -45,6 +45,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -308,7 +310,7 @@ fun AddEditCaseScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Box(modifier = Modifier.weight(1f).clickable { showStartDatePicker = true }) {
+                Box(modifier = Modifier.weight(1f).clickable { showStartDatePicker = true }.semantics { contentDescription = "Select case start date" }) {
                     OutlinedTextField(
                         value = DateUtils.formatDate(startDate),
                         onValueChange = {},
@@ -320,7 +322,7 @@ fun AddEditCaseScreen(
                     )
                 }
 
-                Box(modifier = Modifier.weight(1f).clickable { showDueDatePicker = true }) {
+                Box(modifier = Modifier.weight(1f).clickable { showDueDatePicker = true }.semantics { contentDescription = "Select case target completion date" }) {
                     OutlinedTextField(
                         value = DateUtils.formatDate(dueDate),
                         onValueChange = {},
