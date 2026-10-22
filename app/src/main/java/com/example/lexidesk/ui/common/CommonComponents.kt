@@ -345,10 +345,6 @@ fun TimePickerModalDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                val cal = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                    set(Calendar.MINUTE, timePickerState.minute)
-                }
                 val hour12 = if (timePickerState.hour % 12 == 0) 12 else timePickerState.hour % 12
                 val amPm = if (timePickerState.hour < 12) "AM" else "PM"
                 val formatted = String.format("%02d:%02d %s", hour12, timePickerState.minute, amPm)
