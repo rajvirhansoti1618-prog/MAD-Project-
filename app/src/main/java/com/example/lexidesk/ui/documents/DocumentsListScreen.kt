@@ -2,6 +2,8 @@ package com.example.lexidesk.ui.documents
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
+import com.example.lexidesk.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -63,6 +65,7 @@ import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.RedUrgent
 import com.example.lexidesk.ui.theme.TealSecondary
 import com.example.lexidesk.utils.DateUtils
+import com.example.lexidesk.utils.FileUtils
 import java.io.File
 
 @Composable
@@ -121,7 +124,7 @@ fun DocumentsListScreen(
                         onClick = onScannerClick,
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.CameraAlt, contentDescription = "Scan document with camera OCR", modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Scan OCR", fontSize = 12.sp)
                     }
@@ -149,11 +152,7 @@ fun DocumentsListScreen(
 
                 if (state.documents.isNotEmpty()) {
                     val totalBytes = state.documents.sumOf { it.fileSize }
-                    val sizeFormatted = when {
-                        totalBytes > 1024 * 1024 -> String.format("%.2f MB", totalBytes / (1024.0 * 1024.0))
-                        totalBytes > 1024 -> String.format("%.1f KB", totalBytes / 1024.0)
-                        else -> "$totalBytes bytes"
-                    }
+                    val sizeFormatted = FileUtils.formatFileSize(totalBytes)
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
                         shape = RoundedCornerShape(8.dp),
@@ -185,9 +184,15 @@ fun DocumentsListScreen(
                 EmptyStateView(
                     icon = Icons.Default.Description,
                     title = if (state.searchQuery.isNotBlank()) "No Matching Documents" else "Vault is Empty",
-                    description = if (state.searchQuery.isNotBlank()) "Try resetting your search query or category." else "Import client PDFs, scanned contracts, or agreements into app storage.",
-                    actionButtonText = if (state.searchQuery.isBlank()) "Import Document" else null,
-                    onActionClick = onAddDocumentClick
+                    description = if (state.searchQuery.isNotBlank()) "No documents matched '${state.searchQuery}'. Try resetting your search query or category." else "Import client PDFs, scanned contracts, or agreements into app storage.",
+                    actionButtonText = if (state.searchQuery.isNotBlank()) "Clear Search" else "Import Document",
+                    onActionClick = {
+                        if (state.searchQuery.isNotBlank()) {
+                            viewModel.onSearchQueryChanged("")
+                        } else {
+                            onAddDocumentClick()
+                        }
+                    }
                 )
             } else {
                 LazyColumn(
@@ -201,12 +206,16 @@ fun DocumentsListScreen(
                                 val file = File(doc.filePath)
                                 if (file.exists()) {
                                     PdfGenerator.viewDocument(context, file, doc.fileType)
+                                } else {
+                                    Toast.makeText(context, context.getString(R.string.error_file_not_found), Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onShare = {
                                 val file = File(doc.filePath)
                                 if (file.exists()) {
                                     PdfGenerator.sharePdf(context, file, doc.title)
+                                } else {
+                                    Toast.makeText(context, context.getString(R.string.error_file_not_found), Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onDelete = { docToDelete = doc }
@@ -281,7 +290,7 @@ fun DocumentListItemCard(
                 IconButton(onClick = onShare) {
                     Icon(
                         imageVector = Icons.Default.Share,
-                        contentDescription = "Share",
+                        contentDescription = "Share document",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
@@ -289,7 +298,7 @@ fun DocumentListItemCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = "Delete document",
                         tint = RedUrgent,
                         modifier = Modifier.size(20.dp)
                     )

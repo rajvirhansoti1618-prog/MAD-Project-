@@ -144,7 +144,7 @@ fun TasksListScreen(
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    listOf("Due Date", "Priority", "Title").forEach { sortOption ->
+                    listOf("Due Date", "Priority", "Title", "Newest").forEach { sortOption ->
                         FilterChip(
                             selected = state.sortBy == sortOption,
                             onClick = { viewModel.onSortByChanged(sortOption) },
@@ -158,9 +158,15 @@ fun TasksListScreen(
                 EmptyStateView(
                     icon = Icons.Default.Assignment,
                     title = if (state.searchQuery.isNotBlank()) "No Matching Tasks" else "No Tasks Found",
-                    description = if (state.searchQuery.isNotBlank()) "Try altering your search or active filter." else "Create actionable tasks with deadlines and notification alerts.",
-                    actionButtonText = if (state.searchQuery.isBlank()) "Create Task" else null,
-                    onActionClick = onAddTaskClick
+                    description = if (state.searchQuery.isNotBlank()) "No tasks matched '${state.searchQuery}'. Try resetting your filter or search." else "Create actionable tasks with deadlines and notification alerts.",
+                    actionButtonText = if (state.searchQuery.isNotBlank()) "Clear Search" else "Create Task",
+                    onActionClick = {
+                        if (state.searchQuery.isNotBlank()) {
+                            viewModel.onSearchQueryChanged("")
+                        } else {
+                            onAddTaskClick()
+                        }
+                    }
                 )
             } else {
                 LazyColumn(
@@ -218,7 +224,7 @@ fun TaskListItemCard(
             ) {
                 Icon(
                     imageVector = if (isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = "Toggle completion",
+                    contentDescription = if (isCompleted) "Mark task as pending" else "Mark task as completed",
                     tint = if (isCompleted) GreenSuccess else MaterialTheme.colorScheme.outline
                 )
             }
@@ -311,4 +317,5 @@ fun TaskListItemCard(
 
 
     }
+}
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,6 +44,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.lexidesk.R
 import com.example.lexidesk.ui.theme.NavyPrimary
@@ -136,7 +139,8 @@ fun AddEditClientScreen(
                 isError = nameError != null,
                 supportingText = { nameError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next)
             )
 
             // Company Name
@@ -146,7 +150,8 @@ fun AddEditClientScreen(
                 label = { Text(if (clientType == "Business") stringResource(R.string.company_name_required) else stringResource(R.string.company_name_optional)) },
                 leadingIcon = { Icon(Icons.Default.Business, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next)
             )
 
                 // Phone
@@ -166,7 +171,8 @@ fun AddEditClientScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next)
                 )
 
                 // Email
@@ -181,7 +187,8 @@ fun AddEditClientScreen(
                     isError = emailError != null,
                     supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next)
                 )
 
             // Physical Address
@@ -219,33 +226,36 @@ fun AddEditClientScreen(
             // Save Button
             Button(
                 onClick = {
-                    if (fullName.isBlank()) {
+                    val trimmedName = fullName.trim()
+                    val trimmedEmail = email.trim()
+                    val trimmedPhone = phone.trim()
+
+                    if (trimmedName.isBlank()) {
                         nameError = nameRequiredMsg
                         return@Button
                     }
-                    // Validate inputs
-                if (email.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(email)) {
-                    emailError = invalidEmailMsg
-                    return@Button
-                }
-                if (phone.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidPhone(phone)) {
-                    phoneError = invalidPhoneMsg
-                    return@Button
-                }
+                    if (trimmedEmail.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidEmail(trimmedEmail)) {
+                        emailError = invalidEmailMsg
+                        return@Button
+                    }
+                    if (trimmedPhone.isNotBlank() && !com.example.lexidesk.utils.ValidationUtils.isValidPhone(trimmedPhone)) {
+                        phoneError = invalidPhoneMsg
+                        return@Button
+                    }
 
-                // Save client
-                viewModel.saveClient(
-                    id = clientId ?: 0L,
-                    fullName = fullName,
-                    clientType = clientType,
-                    phone = phone,
-                    email = email,
-                    address = address,
-                    companyName = companyName,
-                    notes = notes,
-                    tags = tags,
-                    onSuccess = onSaveSuccess
-                )
+                    // Save client
+                    viewModel.saveClient(
+                        id = clientId ?: 0L,
+                        fullName = trimmedName,
+                        clientType = clientType,
+                        phone = trimmedPhone,
+                        email = trimmedEmail,
+                        address = address.trim(),
+                        companyName = companyName.trim(),
+                        notes = notes,
+                        tags = tags,
+                        onSuccess = onSaveSuccess
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()

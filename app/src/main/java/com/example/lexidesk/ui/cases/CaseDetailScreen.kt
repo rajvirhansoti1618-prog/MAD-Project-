@@ -1,5 +1,6 @@
 package com.example.lexidesk.ui.cases
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -52,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +78,7 @@ fun CaseDetailScreen(
     onAddDocumentClick: (Long) -> Unit
 ) {
     val detailState by viewModel.getCaseDetailState(caseId).collectAsState()
+    val context = LocalContext.current
     val caseItem = detailState.caseItem
     val client = detailState.client
 
@@ -149,6 +153,26 @@ fun CaseDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = {
+                        caseItem?.let { c ->
+                            val shareText = buildString {
+                                appendLine("--- LexiDesk Case Summary ---")
+                                appendLine("Title: ${c.title}")
+                                appendLine("Category: ${c.category}")
+                                appendLine("Priority: ${c.priority} | Status: ${c.status}")
+                                if (c.referenceNumber.isNotBlank()) appendLine("Ref #: ${c.referenceNumber}")
+                                if (c.courtOrLocation.isNotBlank()) appendLine("Court / Forum: ${c.courtOrLocation}")
+                            }
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, "Case Summary: ${c.title}")
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share Case Info"))
+                        }
+                    }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share Case")
+                    }
                     IconButton(onClick = { onEditCaseClick(caseId) }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit Case")
                     }

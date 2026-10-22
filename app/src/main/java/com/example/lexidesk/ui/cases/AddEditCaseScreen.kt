@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,8 +44,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.example.lexidesk.R
 import com.example.lexidesk.ui.common.DatePickerModalDialog
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.utils.DateUtils
@@ -59,6 +64,7 @@ fun AddEditCaseScreen(
     onSaveSuccess: (Long) -> Unit
 ) {
     val clients by viewModel.clientsFlow.collectAsState()
+    val context = LocalContext.current
 
     var selectedClientId by remember { mutableStateOf<Long?>(initialClientId) }
     var title by remember { mutableStateOf("") }
@@ -72,6 +78,7 @@ fun AddEditCaseScreen(
     var description by remember { mutableStateOf("") }
 
     var titleError by remember { mutableStateOf<String?>(null) }
+    var referenceNumberError by remember { mutableStateOf<String?>(null) }
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showDueDatePicker by remember { mutableStateOf(false) }
 
@@ -156,7 +163,8 @@ fun AddEditCaseScreen(
                 isError = titleError != null,
                 supportingText = { titleError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next)
             )
 
             // Client Selector Dropdown
@@ -236,10 +244,16 @@ fun AddEditCaseScreen(
             // Reference Number
             OutlinedTextField(
                 value = referenceNumber,
-                onValueChange = { referenceNumber = it },
+                onValueChange = {
+                    referenceNumber = it
+                    if (referenceNumberError != null) referenceNumberError = null
+                },
                 label = { Text("Case Ref # / Court Docket No. / Project Code") },
+                isError = referenceNumberError != null,
+                supportingText = { referenceNumberError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next)
             )
 
             // Court or Location
@@ -249,7 +263,8 @@ fun AddEditCaseScreen(
                 label = { Text("Court / Forum / Meeting Location") },
                 leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next)
             )
 
             // Priority Selector Chips
@@ -318,7 +333,8 @@ fun AddEditCaseScreen(
                 onValueChange = { description = it },
                 label = { Text("Case Description & Objectives") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                minLines = 3,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -327,7 +343,11 @@ fun AddEditCaseScreen(
             Button(
                 onClick = {
                     if (title.isBlank()) {
-                        titleError = "Case title is required"
+                        titleError = context.getString(R.string.error_case_title_required)
+                        return@Button
+                    }
+                    if (referenceNumber.isNotBlank() && referenceNumber.length < 3) {
+                        referenceNumberError = context.getString(R.string.error_case_ref_length)
                         return@Button
                     }
                     viewModel.saveCase(

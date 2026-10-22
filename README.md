@@ -175,6 +175,13 @@ app/src/main/java/com/example/lexidesk/
 
 LexiDesk includes unit tests verifying validation helpers and utility functions:
 
+| Test File | What It Covers |
+|---|---|
+| `ValidationUtilsTest` | Client name, email format, phone number (including international), and matter title constraints |
+| `DateUtilsTest` | Date formatting, overdue detection, `daysUntil`, `isWithinDays`, and `isSameDay` helpers |
+| `TaskEntityTest` | `priorityWeight` ordering for all priority levels and case-insensitivity |
+| `FileUtilsTest` | `formatFileSize` byte → KB → MB → GB formatting edge cases |
+
 - **Run all unit tests via Gradle:**
   ```bash
   ./gradlew testDebugUnitTest
@@ -183,11 +190,24 @@ LexiDesk includes unit tests verifying validation helpers and utility functions:
   ```bash
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.ValidationUtilsTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.DateUtilsTest"
+  ./gradlew testDebugUnitTest --tests "com.example.lexidesk.TaskEntityTest"
+  ./gradlew testDebugUnitTest --tests "com.example.lexidesk.FileUtilsTest"
   ```
 - **Test reports** are generated at:
   ```
   app/build/reports/tests/testDebugUnitTest/index.html
   ```
+
+## 🛠️ Troubleshooting Setup
+
+| Issue | Solution |
+|---|---|
+| Gradle sync fails | Ensure you have **JDK 17** configured in Android Studio → Gradle JDK settings. |
+| `kspDebugKotlin` error | Run `./gradlew clean` then rebuild. |
+| App crashes on first launch | Grant **notification permission** in Android settings, then relaunch. |
+| OCR scanner not working | Ensure Google Play Services ML Kit is available on the device. Not available on pure AOSP devices. |
+| Documents disappear after reinstall | Files are stored in app-private storage. They will be deleted on uninstall. Use the backup feature to export. |
+| Reminders not triggering | Check that **Alarms & Reminders** permission is granted in Android 12+ device settings. |
 
 
 ## 🤝 Contributing

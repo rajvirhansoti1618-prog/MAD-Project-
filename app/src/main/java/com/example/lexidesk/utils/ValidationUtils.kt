@@ -19,10 +19,42 @@ object ValidationUtils {
     }
 
     /**
-     * Returns true if the given phone number contains at least 7 digits.
+     * Returns true if the given phone number contains a valid format with at least 7 digits.
+     * Supports optional '+' prefix, digits, spaces, and hyphens.
      */
     fun isValidPhone(phone: String?): Boolean {
-        return !phone.isNullOrBlank() && phone.matches(Regex("\\d{7,}"))
+        if (phone.isNullOrBlank()) return false
+        val clean = phone.trim()
+        val digitsOnly = clean.filter { it.isDigit() }
+        if (digitsOnly.length < 7 || digitsOnly.length > 15) return false
+        return clean.matches(Regex("^\\+?[0-9\\-\\s]+$"))
     }
 
+    /**
+     * Returns true if the given title is not blank and has at least the specified minimum length.
+     */
+    fun isValidTitle(title: String?, minLength: Int = 2): Boolean {
+        return !title.isNullOrBlank() && title.trim().length >= minLength
+    }
+
+    /**
+     * Returns true if the given postal/ZIP code has a valid format (between 3 and 10 alphanumeric characters,
+     * optional space or hyphen, e.g. "90210", "110001", "SW1A 1AA", "K1A-0B1").
+     */
+    fun isValidPostalCode(code: String?): Boolean {
+        if (code.isNullOrBlank()) return false
+        val clean = code.trim()
+        val alphanumericOnly = clean.filter { it.isLetterOrDigit() }
+        if (alphanumericOnly.length < 3 || alphanumericOnly.length > 10) return false
+        return clean.matches(Regex("^[A-Za-z0-9]+([\\s\\-][A-Za-z0-9]+)?$"))
+    }
+
+    /**
+     * Returns true if the given URL has a recognizable scheme (http or https) and a non-blank host.
+     */
+    fun isValidUrl(url: String?): Boolean {
+        if (url.isNullOrBlank()) return false
+        val trimmed = url.trim()
+        return trimmed.matches(Regex("^https?://[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=%]+$"))
+    }
 }

@@ -2,6 +2,7 @@ package com.example.lexidesk.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
@@ -39,4 +40,14 @@ data class TaskEntity(
     val dueTime: String? = null,
     val reminderEnabled: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
-)
+) {
+    @get:Ignore
+    val priorityWeight: Int
+        get() = when (priority.trim().lowercase()) {
+            "urgent" -> 4
+            "high" -> 3
+            "medium" -> 2
+            "low" -> 1
+            else -> 0
+        }
+}
