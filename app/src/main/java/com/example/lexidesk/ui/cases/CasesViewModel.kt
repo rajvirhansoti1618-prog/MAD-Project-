@@ -75,6 +75,8 @@ class CasesViewModel(private val app: LexiDeskApp) : ViewModel() {
         }.let { list ->
             when (sort) {
                 "Due Date" -> list.sortedWith(compareBy(nullsLast()) { it.dueDate })
+                "Priority" -> list.sortedByDescending { it.priorityWeight }
+                "Title" -> list.sortedBy { it.title.lowercase() }
                 else -> list.sortedByDescending { it.updatedAt }
             }
         }
