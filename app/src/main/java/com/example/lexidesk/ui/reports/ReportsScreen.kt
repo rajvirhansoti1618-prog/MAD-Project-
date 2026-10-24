@@ -64,8 +64,8 @@ fun ReportsScreen(
     val state by dashboardViewModel.uiState.collectAsState()
 
     val totalCases = state.activeCasesCount // approximate or total
-    val totalTasks = state.pendingTasksCount + state.todayTasks.size
-    val taskCompletionRate = if (totalTasks > 0) (state.todayTasks.count { it.status == "Completed" }.toFloat() / totalTasks.toFloat()) else 0.75f
+    // Use the pre-computed completionRate from DashboardViewModel (completedTasks / (pendingTasks + completedTasks), defaults to 0f when no tasks)
+    val taskCompletionRate = state.completionRate
 
     Scaffold(
         topBar = {

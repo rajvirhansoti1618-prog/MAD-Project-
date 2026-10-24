@@ -26,41 +26,58 @@ object PdfGenerator {
     ): File? {
         val document = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // Standard A4 points
-        val page = document.startPage(pageInfo)
-        val canvas = page.canvas
+        var currentPage = document.startPage(pageInfo)
+        var canvas = currentPage.canvas
 
         val paint = Paint().apply {
             isAntiAlias = true
         }
 
-        // Header background banner (Dark Navy: #0F2537)
-        paint.color = Color.rgb(15, 37, 55)
-        canvas.drawRect(0f, 0f, 595f, 90f, paint)
+        // Helper: draw the full first-page header
+        fun drawFirstPageHeader() {
+            // Header background banner (Dark Navy: #0F2537)
+            paint.color = Color.rgb(15, 37, 55)
+            canvas.drawRect(0f, 0f, 595f, 90f, paint)
 
-        // Header Title
-        paint.color = Color.WHITE
-        paint.textSize = 20f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText(firmName.ifBlank { "LexiDesk Services" }, 40f, 50f, paint)
+            // Header Title
+            paint.color = Color.WHITE
+            paint.textSize = 20f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            canvas.drawText(firmName.ifBlank { "LexiDesk Services" }, 40f, 50f, paint)
 
-        // Subheader Date & Ref
-        paint.textSize = 10f
-        paint.typeface = Typeface.DEFAULT
-        val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-        val dateString = "Date: ${dateFormat.format(Date())}"
-        canvas.drawText(dateString, 40f, 75f, paint)
+            // Subheader Date & Ref
+            paint.textSize = 10f
+            paint.typeface = Typeface.DEFAULT
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val dateString = "Date: ${dateFormat.format(Date())}"
+            canvas.drawText(dateString, 40f, 75f, paint)
 
-        if (referenceNumber.isNotBlank()) {
-            val refText = "Ref: $referenceNumber"
-            val refWidth = paint.measureText(refText)
-            canvas.drawText(refText, 555f - refWidth, 75f, paint)
+            if (referenceNumber.isNotBlank()) {
+                val refText = "Ref: $referenceNumber"
+                val refWidth = paint.measureText(refText)
+                canvas.drawText(refText, 555f - refWidth, 75f, paint)
+            }
+
+            // Document Title
+            paint.color = Color.rgb(15, 37, 55)
+            paint.textSize = 18f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            canvas.drawText(title, 40f, 130f, paint)
         }
 
-        // Document Title
-        paint.color = Color.rgb(15, 37, 55)
-        paint.textSize = 18f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText(title, 40f, 130f, paint)
+        // Helper: draw a compact continuation header on pages 2+, returns starting Y for body text
+        fun drawContinuationHeader(pageNum: Int): Float {
+            paint.color = Color.rgb(15, 37, 55)
+            canvas.drawRect(0f, 0f, 595f, 50f, paint)
+            paint.color = Color.WHITE
+            paint.textSize = 10f
+            paint.typeface = Typeface.DEFAULT
+            canvas.drawText("$firmName — $title  (Page $pageNum)", 40f, 32f, paint)
+            return 70f
+        }
+
+        // Draw first-page header
+        drawFirstPageHeader()
 
         // Client info if provided
         var currentY = 150f
@@ -85,42 +102,73 @@ object PdfGenerator {
         paint.strokeWidth = 0f
 
         val maxWidth = 515f
-        val lines = content.split("\n")
+        val contentLines = content.split("\n")
+        var pageNumber = 1
 
-        for (paragraph in lines) {
+        // Helper: finish current page with footer and start a new one
+        fun startNewPage() {
+            // Footer on current page
+            paint.color = Color.rgb(148, 163, 184)
+            paint.textSize = 9f
+            canvas.drawText("Generated via LexiDesk • Professional Productivity Assistant  |  Page $pageNumber", 40f, 815f, paint)
+
+            document.finishPage(currentPage)
+
+            pageNumber++
+            val newPageInfo = PdfDocument.PageInfo.Builder(595, 842, pageNumber).create()
+            currentPage = document.startPage(newPageInfo)
+            canvas = currentPage.canvas
+
+            currentY = drawContinuationHeader(pageNumber)
+
+            // Restore body paint
+            paint.color = Color.rgb(30, 41, 59)
+            paint.textSize = 11f
+            paint.typeface = Typeface.DEFAULT
+            paint.strokeWidth = 0f
+        }
+
+        for (paragraph in contentLines) {
             val words = paragraph.split(" ")
             var currentLine = StringBuilder()
 
             for (word in words) {
                 val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
                 if (paint.measureText(testLine) > maxWidth) {
+                    // Flush the current line
                     canvas.drawText(currentLine.toString(), 40f, currentY, paint)
                     currentY += 16f
                     currentLine = StringBuilder(word)
+
+                    // Check for page overflow after flushing
+                    if (currentY > 780f) {
+                        startNewPage()
+                    }
                 } else {
                     currentLine = StringBuilder(testLine)
                 }
-
-                if (currentY > 780f) {
-                    break // Keep single page clean for quick MAD export
-                }
             }
 
-            if (currentLine.isNotEmpty() && currentY <= 780f) {
+            if (currentLine.isNotEmpty()) {
+                if (currentY > 780f) {
+                    startNewPage()
+                }
                 canvas.drawText(currentLine.toString(), 40f, currentY, paint)
                 currentY += 16f
             }
-            currentY += 8f
+            currentY += 8f // paragraph spacing
 
-            if (currentY > 780f) break
+            if (currentY > 780f) {
+                startNewPage()
+            }
         }
 
-        // Footer
+        // Footer on the last page
         paint.color = Color.rgb(148, 163, 184)
         paint.textSize = 9f
-        canvas.drawText("Generated via LexiDesk • Professional Productivity Assistant", 40f, 815f, paint)
+        canvas.drawText("Generated via LexiDesk • Professional Productivity Assistant  |  Page $pageNumber", 40f, 815f, paint)
 
-        document.finishPage(page)
+        document.finishPage(currentPage)
 
         // Save PDF to app storage
         val timeStamp = System.currentTimeMillis()
