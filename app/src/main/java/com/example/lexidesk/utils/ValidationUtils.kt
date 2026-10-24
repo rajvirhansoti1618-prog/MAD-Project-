@@ -70,3 +70,4 @@ object ValidationUtils {
 // TODO: Add address validation with postal code support
 // TODO: Integrate Indian Aadhaar and PAN number validation
 // TODO: Add case number format validation per court type
+// Edge case: emails with subdomains are accepted
