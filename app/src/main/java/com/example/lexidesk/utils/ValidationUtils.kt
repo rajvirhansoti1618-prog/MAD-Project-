@@ -66,3 +66,4 @@ object ValidationUtils {
 // Name validation enforces minimum length and character restrictions
 // URL validation checks for valid http/https scheme and host
 // All string inputs are trimmed before validation
+// Null and blank inputs are treated as invalid across all validators
