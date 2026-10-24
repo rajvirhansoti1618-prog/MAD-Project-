@@ -72,3 +72,4 @@ object ValidationUtils {
 // TODO: Add case number format validation per court type
 // Edge case: emails with subdomains are accepted
 // Edge case: URLs without trailing slash are valid
+// Performance: regex patterns are compiled inline per call
