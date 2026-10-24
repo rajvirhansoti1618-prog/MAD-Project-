@@ -64,3 +64,4 @@ object ValidationUtils {
 // Email validation uses RFC-compliant regex pattern matching
 // Phone validation supports international formats with country codes
 // Name validation enforces minimum length and character restrictions
+// URL validation checks for valid http/https scheme and host
