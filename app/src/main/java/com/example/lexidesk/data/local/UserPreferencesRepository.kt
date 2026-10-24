@@ -80,8 +80,21 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun setAppLock(enabled: Boolean, pin: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.APP_LOCK_ENABLED] = enabled
-            preferences[PreferencesKeys.APP_LOCK_PIN] = pin
+            // Store the SHA-256 hash of the PIN instead of the raw value.
+            // NOTE: This is a one-way upgrade — any previously stored plain-text PINs
+            // will be invalidated and the user must set a new PIN.
+            preferences[PreferencesKeys.APP_LOCK_PIN] = if (pin.isBlank()) "" else hashPin(pin)
         }
+    }
+
+    /**
+     * Returns the SHA-256 hex digest of the given PIN string.
+     * Used to avoid storing the raw PIN in DataStore.
+     */
+    fun hashPin(pin: String): String {
+        val digest = java.security.MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(pin.toByteArray(Charsets.UTF_8))
+        return hashBytes.joinToString("") { "%02x".format(it) }
     }
 
     suspend fun setSampleDataLoaded(loaded: Boolean) {

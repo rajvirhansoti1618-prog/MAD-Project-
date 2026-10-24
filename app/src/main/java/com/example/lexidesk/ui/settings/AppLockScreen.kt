@@ -35,6 +35,16 @@ import androidx.compose.ui.unit.dp
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.RedUrgent
 
+/**
+ * Hashes the entered PIN with SHA-256 before comparing against the stored hash,
+ * so that the raw PIN is never held in memory beyond this comparison.
+ */
+private fun hashPin(pin: String): String {
+    val digest = java.security.MessageDigest.getInstance("SHA-256")
+    val hashBytes = digest.digest(pin.toByteArray(Charsets.UTF_8))
+    return hashBytes.joinToString("") { "%02x".format(it) }
+}
+
 @Composable
 fun AppLockScreen(
     correctPin: String,
@@ -107,7 +117,7 @@ fun AppLockScreen(
 
             Button(
                 onClick = {
-                    if (enteredPin == correctPin) {
+                    if (hashPin(enteredPin) == correctPin) {
                         onUnlocked()
                     } else {
                         errorMsg = "Incorrect PIN"
