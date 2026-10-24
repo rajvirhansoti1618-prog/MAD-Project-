@@ -80,3 +80,4 @@ object ValidationUtils {
 // Validators are used across AddEditClientScreen and AddEditCaseScreen
 // Error messages should be localized in future iterations
 // Max field lengths: name=100, email=254, phone=20, url=2048
+// Minimum field lengths: name=2, email=5, phone=7
