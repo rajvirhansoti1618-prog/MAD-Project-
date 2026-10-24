@@ -62,3 +62,4 @@ object ValidationUtils {
 // Handles email, phone, name, and URL validation
 // All validators return Boolean for consistent API usage
 // Email validation uses RFC-compliant regex pattern matching
+// Phone validation supports international formats with country codes
