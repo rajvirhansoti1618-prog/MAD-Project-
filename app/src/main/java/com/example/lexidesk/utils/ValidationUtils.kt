@@ -67,3 +67,4 @@ object ValidationUtils {
 // URL validation checks for valid http/https scheme and host
 // All string inputs are trimmed before validation
 // Null and blank inputs are treated as invalid across all validators
+// TODO: Add address validation with postal code support
