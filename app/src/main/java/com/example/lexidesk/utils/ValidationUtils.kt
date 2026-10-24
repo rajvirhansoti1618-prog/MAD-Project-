@@ -65,3 +65,4 @@ object ValidationUtils {
 // Phone validation supports international formats with country codes
 // Name validation enforces minimum length and character restrictions
 // URL validation checks for valid http/https scheme and host
+// All string inputs are trimmed before validation
