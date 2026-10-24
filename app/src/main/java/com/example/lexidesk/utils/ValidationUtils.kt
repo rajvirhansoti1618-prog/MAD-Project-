@@ -78,3 +78,4 @@ object ValidationUtils {
 // See also: DateUtils.kt for date parsing and formatting
 // See also: FileUtils.kt for file type and size validation
 // Validators are used across AddEditClientScreen and AddEditCaseScreen
+// Error messages should be localized in future iterations
