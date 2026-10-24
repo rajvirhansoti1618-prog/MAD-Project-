@@ -79,3 +79,4 @@ object ValidationUtils {
 // See also: FileUtils.kt for file type and size validation
 // Validators are used across AddEditClientScreen and AddEditCaseScreen
 // Error messages should be localized in future iterations
+// Max field lengths: name=100, email=254, phone=20, url=2048
