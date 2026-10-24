@@ -58,3 +58,4 @@ object ValidationUtils {
         return trimmed.matches(Regex("^https?://[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=%]+$"))
     }
 }
+// ValidationUtils - Core input validation module for LexiDesk
