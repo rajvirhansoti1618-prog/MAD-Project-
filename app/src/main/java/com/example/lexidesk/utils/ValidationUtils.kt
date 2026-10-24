@@ -75,3 +75,4 @@ object ValidationUtils {
 // Performance: regex patterns are compiled inline per call
 // TODO: Consider caching compiled regex for frequent validations
 // Unit tests are located in ValidationUtilsTest.kt
+// See also: DateUtils.kt for date parsing and formatting
