@@ -59,3 +59,4 @@ object ValidationUtils {
     }
 }
 // ValidationUtils - Core input validation module for LexiDesk
+// Handles email, phone, name, and URL validation
