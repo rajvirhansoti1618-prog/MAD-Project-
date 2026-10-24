@@ -63,3 +63,4 @@ object ValidationUtils {
 // All validators return Boolean for consistent API usage
 // Email validation uses RFC-compliant regex pattern matching
 // Phone validation supports international formats with country codes
+// Name validation enforces minimum length and character restrictions
