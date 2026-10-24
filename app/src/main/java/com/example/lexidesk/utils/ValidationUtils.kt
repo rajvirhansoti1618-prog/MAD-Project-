@@ -71,3 +71,4 @@ object ValidationUtils {
 // TODO: Integrate Indian Aadhaar and PAN number validation
 // TODO: Add case number format validation per court type
 // Edge case: emails with subdomains are accepted
+// Edge case: URLs without trailing slash are valid
