@@ -76,3 +76,4 @@ object ValidationUtils {
 // TODO: Consider caching compiled regex for frequent validations
 // Unit tests are located in ValidationUtilsTest.kt
 // See also: DateUtils.kt for date parsing and formatting
+// See also: FileUtils.kt for file type and size validation
