@@ -10,6 +10,8 @@ class NoteRepository(private val noteDao: NoteDao) {
 
     fun getNotesByCase(caseId: Long): Flow<List<NoteEntity>> = noteDao.getNotesByCase(caseId)
 
+    fun searchNotes(query: String): Flow<List<NoteEntity>> = noteDao.searchNotes(query)
+
     suspend fun insertNote(note: NoteEntity): Long = noteDao.insertNote(note)
 
     suspend fun updateNote(note: NoteEntity) = noteDao.updateNote(note)

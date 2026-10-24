@@ -19,9 +19,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Article
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Note
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,7 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.lexidesk.LexiDeskApp
 import com.example.lexidesk.ui.common.LexiSearchBar
+import com.example.lexidesk.ui.theme.AmberAccent
 import com.example.lexidesk.ui.theme.BlueInfo
+import com.example.lexidesk.ui.theme.GreenSuccess
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.TealSecondary
 
@@ -65,6 +69,10 @@ fun GlobalSearchScreen(
     val allTasks by app.taskRepository.allTasks.collectAsState(initial = emptyList())
     val allDocs by app.documentRepository.allDocuments.collectAsState(initial = emptyList())
 
+    // Notes and drafts: collect full lists and filter in-memory (avoids Flow restart on every keystroke)
+    val allNotes by app.noteRepository.searchNotes(query.trim()).collectAsState(initial = emptyList())
+    val allDrafts by app.draftTemplateRepository.searchDrafts(query.trim()).collectAsState(initial = emptyList())
+
     val filteredClients = if (query.isBlank()) emptyList() else allClients.filter {
         it.fullName.contains(query, ignoreCase = true) || it.companyName.contains(query, ignoreCase = true)
     }
@@ -80,6 +88,14 @@ fun GlobalSearchScreen(
     val filteredDocs = if (query.isBlank()) emptyList() else allDocs.filter {
         it.title.contains(query, ignoreCase = true) || it.fileName.contains(query, ignoreCase = true)
     }
+
+    // Notes and drafts are already filtered by the DAO query; show empty list when query is blank
+    val filteredNotes = if (query.isBlank()) emptyList() else allNotes
+    val filteredDrafts = if (query.isBlank()) emptyList() else allDrafts
+
+    val hasResults = filteredClients.isNotEmpty() || filteredCases.isNotEmpty() ||
+            filteredTasks.isNotEmpty() || filteredDocs.isNotEmpty() ||
+            filteredNotes.isNotEmpty() || filteredDrafts.isNotEmpty()
 
     Scaffold(
         topBar = {
@@ -103,7 +119,7 @@ fun GlobalSearchScreen(
                 LexiSearchBar(
                     query = query,
                     onQueryChange = { query = it },
-                    placeholder = "Type name, case, task, document title..."
+                    placeholder = "Type name, case, task, note, document title..."
                 )
             }
 
@@ -111,7 +127,7 @@ fun GlobalSearchScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Type a keyword above to search everything.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-            } else if (filteredClients.isEmpty() && filteredCases.isEmpty() && filteredTasks.isEmpty() && filteredDocs.isEmpty()) {
+            } else if (!hasResults) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No results found for \"${query.trim()}\"", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -187,6 +203,54 @@ fun GlobalSearchScreen(
                                     Icon(Icons.Default.Description, contentDescription = null, tint = NavyPrimary)
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Text(doc.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
+                                }
+                            }
+                        }
+                    }
+
+                    // Notes Section
+                    if (filteredNotes.isNotEmpty()) {
+                        item { Text("Notes (${filteredNotes.size})", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) }
+                        items(filteredNotes) { note ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            ) {
+                                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Note, contentDescription = null, tint = GreenSuccess)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(note.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
+                                        if (note.content.isNotBlank()) {
+                                            Text(
+                                                note.content.take(80) + if (note.content.length > 80) "…" else "",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Draft Templates Section
+                    if (filteredDrafts.isNotEmpty()) {
+                        item { Text("Draft Templates (${filteredDrafts.size})", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) }
+                        items(filteredDrafts) { draft ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            ) {
+                                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Article, contentDescription = null, tint = AmberAccent)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(draft.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
+                                        Text(draft.templateType, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
                                 }
                             }
                         }

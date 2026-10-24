@@ -26,6 +26,9 @@ interface DraftTemplateDao {
     @Update
     suspend fun updateDraft(draft: DraftTemplateEntity)
 
+    @Query("SELECT * FROM draft_templates WHERE title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%' ORDER BY lastModified DESC")
+    fun searchDrafts(query: String): Flow<List<DraftTemplateEntity>>
+
     @Delete
     suspend fun deleteDraft(draft: DraftTemplateEntity)
 }

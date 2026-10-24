@@ -23,6 +23,9 @@ interface NoteDao {
     @Update
     suspend fun updateNote(note: NoteEntity)
 
+    @Query("SELECT * FROM notes WHERE title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%' ORDER BY createdAt DESC")
+    fun searchNotes(query: String): Flow<List<NoteEntity>>
+
     @Delete
     suspend fun deleteNote(note: NoteEntity)
 }

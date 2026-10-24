@@ -10,6 +10,8 @@ class DraftTemplateRepository(private val draftDao: DraftTemplateDao) {
 
     fun getDraftById(id: Long): Flow<DraftTemplateEntity?> = draftDao.getDraftById(id)
 
+    fun searchDrafts(query: String): Flow<List<DraftTemplateEntity>> = draftDao.searchDrafts(query)
+
     suspend fun getDraftByIdOnce(id: Long): DraftTemplateEntity? = draftDao.getDraftByIdOnce(id)
 
     suspend fun insertDraft(draft: DraftTemplateEntity): Long = draftDao.insertDraft(draft)
