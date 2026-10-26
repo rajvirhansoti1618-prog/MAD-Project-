@@ -205,12 +205,12 @@ fun TaskListItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(14.dp),
-        border = if (isOverdue) BorderStroke(1.dp, RedUrgent.copy(alpha = 0.5f)) else null,
+        shape = RoundedCornerShape(16.dp),
+        border = if (isOverdue) BorderStroke(1.5.dp, RedUrgent.copy(alpha = 0.7f)) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(
             containerColor = if (isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
