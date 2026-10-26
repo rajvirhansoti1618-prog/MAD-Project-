@@ -21,7 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
@@ -159,7 +159,7 @@ fun DashboardScreen(
                     if (!state.isSampleDataLoaded) {
                         Button(
                             onClick = { viewModel.loadSampleData() },
-                            colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Text("Load Demo", fontSize = 12.sp)
@@ -187,7 +187,7 @@ fun DashboardScreen(
                         title = "Clients",
                         value = state.clientCount.toString(),
                         icon = Icons.Default.People,
-                        iconColor = NavyPrimary,
+                        iconColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToClients
                     )
@@ -208,7 +208,7 @@ fun DashboardScreen(
                     SummaryMetricCard(
                         title = "Pending Tasks",
                         value = state.pendingTasksCount.toString(),
-                        icon = Icons.Default.Assignment,
+                        icon = Icons.AutoMirrored.Filled.Assignment,
                         iconColor = BlueInfo,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToTasks
@@ -217,7 +217,7 @@ fun DashboardScreen(
                         title = "Overdue",
                         value = state.overdueTasksCount.toString(),
                         icon = Icons.Default.Warning,
-                        iconColor = if (state.overdueTasksCount > 0) RedUrgent else SlateBorder,
+                        iconColor = if (state.overdueTasksCount > 0) RedUrgent else MaterialTheme.colorScheme.outline,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToTasks
                     )
@@ -231,7 +231,7 @@ fun DashboardScreen(
                         title = "Vault Documents",
                         value = state.documentCount.toString(),
                         icon = Icons.Default.Description,
-                        iconColor = NavyPrimary,
+                        iconColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f),
                         onClick = onNavigateToDocuments
                     )
@@ -318,7 +318,7 @@ fun DashboardScreen(
                     }
                     item {
                         QuickActionButton(
-                            icon = Icons.Default.Assignment,
+                            icon = Icons.AutoMirrored.Filled.Assignment,
                             label = "+ Task",
                             onClick = onAddTask
                         )
@@ -608,13 +608,13 @@ fun QuickActionButton(
                 modifier = Modifier
                     .size(28.dp)
                     .clip(CircleShape)
-                    .background(NavyPrimary.copy(alpha = 0.1f)),
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    tint = NavyPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
             }
