@@ -49,9 +49,7 @@ fun AuthScaffold(
         }
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier = Modifier.fillMaxSize()
         ) {
             content(innerPadding)
         }
