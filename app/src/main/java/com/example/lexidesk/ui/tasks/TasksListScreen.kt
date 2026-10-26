@@ -20,7 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Notifications
@@ -71,7 +71,7 @@ fun TasksListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddTaskClick,
-                containerColor = NavyPrimary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Task")
@@ -156,7 +156,7 @@ fun TasksListScreen(
 
             if (state.tasks.isEmpty()) {
                 EmptyStateView(
-                    icon = Icons.Default.Assignment,
+                    icon = Icons.AutoMirrored.Filled.Assignment,
                     title = if (state.searchQuery.isNotBlank()) "No Matching Tasks" else "No Tasks Found",
                     description = if (state.searchQuery.isNotBlank()) "No tasks matched '${state.searchQuery}'. Try resetting your filter or search." else "Create actionable tasks with deadlines and notification alerts.",
                     actionButtonText = if (state.searchQuery.isNotBlank()) "Clear Search" else "Create Task",
