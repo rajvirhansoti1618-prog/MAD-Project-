@@ -130,9 +130,13 @@ fun ClientDetailScreen(
 
         AlertDialog(
             onDismissRequest = { noteToEdit = null },
+            shape = RoundedCornerShape(24.dp),
             title = { Text("Edit Client Note", style = MaterialTheme.typography.titleLarge) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     OutlinedTextField(
                         value = editTitle,
                         onValueChange = { editTitle = it },
@@ -174,9 +178,13 @@ fun ClientDetailScreen(
 
         AlertDialog(
             onDismissRequest = { showAddNoteDialog = false },
+            shape = RoundedCornerShape(24.dp),
             title = { Text("Add Client Note", style = MaterialTheme.typography.titleLarge) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     OutlinedTextField(
                         value = noteTitle,
                         onValueChange = { noteTitle = it },
