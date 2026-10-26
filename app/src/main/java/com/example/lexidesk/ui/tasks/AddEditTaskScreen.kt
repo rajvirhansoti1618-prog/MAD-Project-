@@ -16,9 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Folder
@@ -37,7 +36,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,12 +52,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import com.example.lexidesk.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.lexidesk.R
 import com.example.lexidesk.ui.common.ConfirmationDialog
 import com.example.lexidesk.ui.common.DatePickerModalDialog
+import com.example.lexidesk.ui.common.DiscardChangesDialog
 import com.example.lexidesk.ui.common.TimePickerModalDialog
+import com.example.lexidesk.ui.common.TopBarWithBack
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.RedUrgent
 import com.example.lexidesk.utils.DateUtils
@@ -93,6 +93,7 @@ fun AddEditTaskScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
     var clientDropdownExpanded by remember { mutableStateOf(false) }
     var caseDropdownExpanded by remember { mutableStateOf(false) }
@@ -142,15 +143,29 @@ fun AddEditTaskScreen(
         )
     }
 
+    val isDirty = title.isNotBlank() || description.isNotBlank()
+    val handleBack = {
+        if (isDirty) {
+            showDiscardDialog = true
+        } else {
+            onBackClick()
+        }
+    }
+
+    DiscardChangesDialog(
+        isOpen = showDiscardDialog,
+        onConfirmDiscard = {
+            showDiscardDialog = false
+            onBackClick()
+        },
+        onDismiss = { showDiscardDialog = false }
+    )
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(if (taskId != null && taskId > 0) "Edit Task" else "Add New Task") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
+            TopBarWithBack(
+                title = if (taskId != null && taskId > 0) "Edit Task" else "Add New Task",
+                onBackClick = handleBack,
                 actions = {
                     if (taskId != null && taskId > 0) {
                         IconButton(onClick = { showDeleteConfirmDialog = true }) {
@@ -178,7 +193,7 @@ fun AddEditTaskScreen(
                     if (it.isNotBlank()) titleError = null
                 },
                 label = { Text("Task Title *") },
-                leadingIcon = { Icon(Icons.Default.Assignment, contentDescription = null) },
+                leadingIcon = { Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = null) },
                 isError = titleError != null,
                 supportingText = { titleError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
                 modifier = Modifier.fillMaxWidth(),
@@ -186,20 +201,22 @@ fun AddEditTaskScreen(
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Next)
             )
 
-            // Client Selector Dropdown
+            // Associate with Client Dropdown
             ExposedDropdownMenuBox(
                 expanded = clientDropdownExpanded,
                 onExpandedChange = { clientDropdownExpanded = it }
             ) {
-                val selectedClientName = clients.find { it.id == selectedClientId }?.fullName ?: "Select Client (Optional)"
+                val clientName = clients.find { it.id == selectedClientId }?.fullName ?: "Select Client (Optional)"
                 OutlinedTextField(
-                    value = selectedClientName,
+                    value = clientName,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Associated Client") },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = clientDropdownExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
 
                 ExposedDropdownMenu(
@@ -225,20 +242,22 @@ fun AddEditTaskScreen(
                 }
             }
 
-            // Case Selector Dropdown
+            // Associate with Case Dropdown
             ExposedDropdownMenuBox(
                 expanded = caseDropdownExpanded,
                 onExpandedChange = { caseDropdownExpanded = it }
             ) {
-                val selectedCaseName = cases.find { it.id == selectedCaseId }?.title ?: "Select Case / Matter (Optional)"
+                val caseTitle = cases.find { it.id == selectedCaseId }?.title ?: "Select Case / Matter (Optional)"
                 OutlinedTextField(
-                    value = selectedCaseName,
+                    value = caseTitle,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Associated Case / Matter") },
                     leadingIcon = { Icon(Icons.Default.Folder, contentDescription = null) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = caseDropdownExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
 
                 ExposedDropdownMenu(
@@ -266,7 +285,7 @@ fun AddEditTaskScreen(
 
             // Priority Selector Chips
             Column {
-                Text("Priority", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium))
+                Text("Priority Level", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium))
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf("Low", "Medium", "High", "Urgent").forEach { p ->
@@ -284,7 +303,7 @@ fun AddEditTaskScreen(
                 Text("Status", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium))
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("Pending", "In Progress", "Completed").forEach { s ->
+                    listOf("Pending", "In Progress", "Completed", "Cancelled").forEach { s ->
                         FilterChip(
                             selected = status == s,
                             onClick = { status = s },
@@ -294,7 +313,7 @@ fun AddEditTaskScreen(
                 }
             }
 
-            // Due Date & Time Pickers
+            // Due Date & Due Time Pickers
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -324,26 +343,26 @@ fun AddEditTaskScreen(
                 }
             }
 
-            // Reminder Switch
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Enable Reminder Notification", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium))
-                    Text("Trigger Android notification alert before deadline", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            // Reminder Toggle & Setting
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Notification Reminder", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium))
+                        Text("AlarmManager push notification alert", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Switch(
+                        checked = reminderEnabled,
+                        onCheckedChange = { reminderEnabled = it }
+                    )
                 }
-                Switch(
-                    checked = reminderEnabled,
-                    onCheckedChange = { reminderEnabled = it },
-                    modifier = Modifier.semantics { contentDescription = "Toggle reminder notification" }
-                )
-            }
 
-            if (reminderEnabled) {
-                Column {
-                    Text("Alert Timing", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (reminderEnabled) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Trigger Alert:", style = MaterialTheme.typography.labelMedium)
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
