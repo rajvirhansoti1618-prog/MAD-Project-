@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -607,7 +609,7 @@ fun QuickActionButton(
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 10.dp)
-                .androidx.compose.foundation.layout.sizeIn(minHeight = 44.dp),
+                .sizeIn(minHeight = 44.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
