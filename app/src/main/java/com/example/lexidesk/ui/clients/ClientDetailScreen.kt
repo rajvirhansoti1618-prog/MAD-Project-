@@ -48,7 +48,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -284,13 +284,13 @@ fun ClientDetailScreen(
                                     modifier = Modifier
                                         .size(54.dp)
                                         .clip(CircleShape)
-                                        .background(if (client.clientType == "Business") TealSecondary.copy(alpha = 0.15f) else NavyPrimary.copy(alpha = 0.15f)),
+                                        .background(if (client.clientType == "Business") TealSecondary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = if (client.clientType == "Business") Icons.Default.Business else Icons.Default.Person,
                                         contentDescription = null,
-                                        tint = if (client.clientType == "Business") TealSecondary else NavyPrimary,
+                                        tint = if (client.clientType == "Business") TealSecondary else MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(28.dp)
                                     )
                                 }
@@ -346,7 +346,7 @@ fun ClientDetailScreen(
                                         },
                                         modifier = Modifier.weight(1f),
                                         shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                     ) {
                                         Icon(Icons.Default.Phone, contentDescription = "Call ${client.fullName}", modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
@@ -410,7 +410,7 @@ fun ClientDetailScreen(
                 // Tabs for Associated items
                 item {
                     val tabs = listOf("Cases (${detailState.cases.size})", "Tasks (${detailState.tasks.size})", "Docs (${detailState.documents.size})", "Notes (${detailState.notes.size})")
-                    TabRow(selectedTabIndex = selectedTabIndex) {
+                    PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
                         tabs.forEachIndexed { index, title ->
                             Tab(
                                 selected = selectedTabIndex == index,

@@ -62,7 +62,7 @@ fun ClientsListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClientClick,
-                containerColor = NavyPrimary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Client")
@@ -174,13 +174,13 @@ fun ClientListItemCard(
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
-                    .background(if (client.clientType == "Business") TealSecondary.copy(alpha = 0.12f) else NavyPrimary.copy(alpha = 0.12f)),
+                    .background(if (client.clientType == "Business") TealSecondary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (client.clientType == "Business") Icons.Default.Business else Icons.Default.Person,
                     contentDescription = null,
-                    tint = if (client.clientType == "Business") TealSecondary else NavyPrimary,
+                    tint = if (client.clientType == "Business") TealSecondary else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             }
