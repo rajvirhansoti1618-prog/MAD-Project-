@@ -61,7 +61,7 @@ fun CasesListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddCaseClick,
-                containerColor = NavyPrimary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Case / Assignment")
