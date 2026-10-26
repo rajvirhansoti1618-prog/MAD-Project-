@@ -71,8 +71,14 @@
 - **Executive PDF Export**: Generate and share high-level executive summaries in PDF format.
 
 ### 🔒 K. Security, App Lock & Offline Backups
-- **App Lock PIN Protection**: Optional 4-digit PIN lock to protect sensitive client data.
+- **App Lock PIN Protection**: Optional 4-digit PIN lock to protect sensitive client data with SHA-256 hash security.
 - **JSON Backup & Restore**: Export all client records, cases, and tasks to an offline JSON archive, or restore them seamlessly.
+
+### 🔑 L. Authentication & Session Gate
+- **Clean Architecture Interface**: Domain-level `AuthRepository` and `AuthResult` sealed classes enabling clean separation between UI and auth providers.
+- **Local Practice Account**: Full offline sign-in and account registration powered by Jetpack DataStore Preferences and SHA-256 password hashing.
+- **Reactive Session Gating**: `MainActivity` and `LexiDeskAppShell` dynamically direct unauthenticated users to the Login/Register flow, while maintaining seamless return for active sessions.
+- **Sign Out Integration**: One-tap sign-out from Settings clearing authentication state cleanly.
 
 ---
 
@@ -80,7 +86,7 @@
 
 - **Language**: Kotlin 2.2.10
 - **UI Framework**: Jetpack Compose with Material 3
-- **Architecture**: MVVM (Model-View-ViewModel) + Repository Pattern
+- **Architecture**: MVVM (Model-View-ViewModel) + Clean Repository Pattern
 - **Local Persistence**: Room Database (`LexiDeskDatabase`) with KSP code generation
 - **Preferences**: Jetpack DataStore Preferences
 - **Background Tasks**: Android WorkManager & AlarmManager
@@ -96,15 +102,20 @@
 ```
 app/src/main/java/com/example/lexidesk/
 ├── LexiDeskApp.kt                 # Application class & repository initialization
-├── MainActivity.kt                # Main activity, notification permission & app lock
+├── MainActivity.kt                # Main activity, auth gate & notification permission
+│
+├── domain/
+│   └── auth/                      # Domain interfaces (AuthRepository, AuthResult)
 │
 ├── data/
+│   ├── auth/                      # LocalAuthRepository implementation
 │   ├── entity/                    # Room Entities (Client, Case, Task, Document, Reminder, Note, Draft)
 │   ├── dao/                       # Room DAOs with Flow queries
 │   ├── local/                     # Room Database & DataStore Preferences
 │   └── repository/                # Repositories abstracting data operations
 │
 ├── ui/
+│   ├── auth/                      # Login & Register screens, ViewModels & state
 │   ├── theme/                     # Brand color palette, typography & M3 theme
 │   ├── common/                    # Metric cards, status badges, search bars & pickers
 │   ├── navigation/                # NavRoutes & Compose Navigation Graph
@@ -150,13 +161,16 @@ app/src/main/java/com/example/lexidesk/
 **Q1: What architecture does this application follow?**  
 > *Answer:* LexiDesk strictly follows Google's recommended **MVVM (Model-View-ViewModel)** architecture paired with the **Repository Pattern**. UI composables observe immutable StateFlow streams from ViewModels, while ViewModels interact with Repositories that abstract Room Database DAOs and DataStore preferences.
 
-**Q2: How does the application ensure documents remain accessible without cloud storage?**  
+**Q2: How does the authentication module work without an external server?**  
+> *Answer:* It employs an offline-first clean architecture pattern where `AuthRepository` defines the contract and `LocalAuthRepository` implements it using Jetpack DataStore Preferences. Passwords are securely hashed with SHA-256 before persistence, ensuring user credentials are never stored in plain text.
+
+**Q3: How does the application ensure documents remain accessible without cloud storage?**  
 > *Answer:* When a user selects a file via Android's Storage Access Framework (SAF), the app immediately reads the input stream and writes a private copy to `context.filesDir`. File metadata is stored in Room, and files are shared using Android's `FileProvider` with content URIs, guaranteeing persistent access without expiring temporary permissions.
 
-**Q3: How are reminders and deadlines scheduled?**  
+**Q4: How are reminders and deadlines scheduled?**  
 > *Answer:* Reminders use `AlarmManager.setExactAndAllowWhileIdle()` to trigger `ReminderBroadcastReceiver` which shows notifications via Android's `NotificationCompat`. Additionally, a `BootReceiver` reschedules active alarms after device reboots, and a periodic `WorkManager` worker runs in the background to flag overdue tasks.
 
-**Q4: How is OCR text extraction implemented?**  
+**Q5: How is OCR text extraction implemented?**  
 > *Answer:* Google ML Kit's Latin Text Recognition runs on-device without requiring an internet connection or paid API key. An image URI or bitmap is passed to `InputImage.fromFilePath()`, and the recognized text blocks are returned via Kotlin Coroutines.
 
 ---
@@ -173,13 +187,15 @@ app/src/main/java/com/example/lexidesk/
 
 ## 🧪 Testing & Verification
 
-LexiDesk includes unit tests verifying validation helpers and utility functions:
+LexiDesk includes unit tests verifying validation helpers, entity properties, and authentication logic:
 
 | Test File | What It Covers |
 |---|---|
+| `AuthUnitTest` | AuthResult sealed classes, UI states, SHA-256 digest consistency, and corporate email constraints |
 | `ValidationUtilsTest` | Client name, email format, phone number (including international), and matter title constraints |
 | `DateUtilsTest` | Date formatting, overdue detection, `daysUntil`, `isWithinDays`, and `isSameDay` helpers |
 | `TaskEntityTest` | `priorityWeight` ordering for all priority levels and case-insensitivity |
+| `CaseEntityTest` | Case status and property validations |
 | `FileUtilsTest` | `formatFileSize` byte → KB → MB → GB formatting edge cases |
 
 - **Run all unit tests via Gradle:**
@@ -188,6 +204,7 @@ LexiDesk includes unit tests verifying validation helpers and utility functions:
   ```
 - **Run a specific test suite:**
   ```bash
+  ./gradlew testDebugUnitTest --tests "com.example.lexidesk.AuthUnitTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.ValidationUtilsTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.DateUtilsTest"
   ./gradlew testDebugUnitTest --tests "com.example.lexidesk.TaskEntityTest"
