@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +42,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lexidesk.ui.settings.SettingsViewModel
-import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.TealSecondary
 
 @Composable
@@ -63,6 +62,7 @@ fun OnboardingScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
+                .imePadding()
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -74,13 +74,13 @@ fun OnboardingScreen(
                 modifier = Modifier
                     .size(72.dp)
                     .clip(CircleShape)
-                    .background(NavyPrimary),
+                    .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Gavel,
                     contentDescription = null,
-                    tint = TealSecondary,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(38.dp)
                 )
             }
@@ -88,7 +88,7 @@ fun OnboardingScreen(
             Text(
                 text = "LexiDesk",
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                color = NavyPrimary
+                color = MaterialTheme.colorScheme.primary
             )
 
             Text(
@@ -181,10 +181,12 @@ fun OnboardingScreen(
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text("Get Started with LexiDesk", fontSize = 15.sp)
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
