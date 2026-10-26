@@ -89,12 +89,17 @@ fun LexiDeskAppShell(
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
                             icon = { screen.icon?.let { Icon(it, contentDescription = screen.title) } },
-                            label = { Text(screen.title, fontWeight = if (currentRoute == screen.route) FontWeight.Bold else FontWeight.Normal) },
+                            label = {
+                                Text(
+                                    text = screen.title,
+                                    style = if (currentRoute == screen.route) MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold) else MaterialTheme.typography.labelSmall
+                                )
+                            },
                             selected = currentRoute == screen.route,
                             colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                                selectedIconColor = com.example.lexidesk.ui.theme.NavyPrimary,
-                                selectedTextColor = com.example.lexidesk.ui.theme.NavyPrimary,
-                                indicatorColor = com.example.lexidesk.ui.theme.TealSecondary.copy(alpha = 0.18f),
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
                                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
