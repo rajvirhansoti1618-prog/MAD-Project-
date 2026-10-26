@@ -68,6 +68,8 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object Settings : Screen("settings", "Settings")
     object GlobalSearch : Screen("global_search", "Search Everything")
     object Onboarding : Screen("onboarding", "Welcome to LexiDesk")
+    object Login : Screen("login", "Sign In")
+    object Register : Screen("register", "Create Account")
 }
 
 val bottomNavItems = listOf(
