@@ -595,13 +595,16 @@ fun QuickActionButton(
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        tonalElevation = 3.dp,
         shadowElevation = 1.dp
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .androidx.compose.foundation.layout.sizeIn(minHeight = 44.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
