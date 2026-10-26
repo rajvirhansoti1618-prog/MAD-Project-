@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -69,6 +72,8 @@ fun SummaryMetricCard(
 ) {
     Card(
         modifier = modifier
+            .sizeIn(minHeight = 48.dp, minWidth = 48.dp)
+            .semantics { this.contentDescription = "$title: $value" }
             .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
@@ -139,7 +144,7 @@ fun StatusBadge(status: String, modifier: Modifier = Modifier) {
     }
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.semantics { this.contentDescription = "Status: $status" },
         shape = RoundedCornerShape(50),
         color = bgColor
     ) {
@@ -163,7 +168,7 @@ fun PriorityBadge(priority: String, modifier: Modifier = Modifier) {
     }
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.semantics { this.contentDescription = "Priority: $priority" },
         shape = RoundedCornerShape(50),
         color = bgColor
     ) {
