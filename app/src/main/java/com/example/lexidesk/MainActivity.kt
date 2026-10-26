@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
             val userProfile by app.userPreferencesRepository.userProfileFlow.collectAsState(
                 initial = com.example.lexidesk.data.local.UserProfile()
             )
+            val isLoggedIn by app.authRepository.isLoggedIn.collectAsState(initial = false)
 
             val darkTheme = when (userProfile.themeMode) {
                 "Dark" -> true
@@ -68,16 +69,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     var isUnlocked by remember { mutableStateOf(!userProfile.isAppLockEnabled) }
 
-                    if (userProfile.isAppLockEnabled && !isUnlocked && userProfile.isOnboarded) {
+                    if (userProfile.isAppLockEnabled && !isUnlocked && userProfile.isOnboarded && isLoggedIn) {
                         AppLockScreen(
                             correctPin = userProfile.appLockPin,
                             onUnlocked = { isUnlocked = true }
                         )
                     } else {
-                        val startDestination = if (userProfile.isOnboarded) {
-                            Screen.Dashboard.route
-                        } else {
-                            Screen.Onboarding.route
+                        val startDestination = when {
+                            !isLoggedIn -> Screen.Login.route
+                            !userProfile.isOnboarded -> Screen.Onboarding.route
+                            else -> Screen.Dashboard.route
                         }
 
                         LexiDeskAppShell(

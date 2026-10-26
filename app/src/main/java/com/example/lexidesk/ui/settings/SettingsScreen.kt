@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Info
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.example.lexidesk.ui.theme.NavyPrimary
+import com.example.lexidesk.ui.theme.RedUrgent
 import com.example.lexidesk.ui.theme.TealSecondary
 import java.io.File
 
@@ -67,7 +69,8 @@ import java.io.File
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBackClick: () -> Unit,
-    onResetOnboarding: () -> Unit
+    onResetOnboarding: () -> Unit,
+    onSignOut: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val profile by viewModel.userProfile.collectAsState()
@@ -141,14 +144,14 @@ fun SettingsScreen(
 
         AlertDialog(
             onDismissRequest = { showPinDialog = false },
-            title = { Text("Configure App Lock PIN") },
+            title = { Text("Set 4-Digit Security PIN") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Enter a 4-digit PIN to secure your client data.")
+                    Text("Enter a 4-digit PIN to secure client data when opening the app.", fontSize = 13.sp)
                     OutlinedTextField(
                         value = pin,
-                        onValueChange = { if (it.length <= 4) pin = it },
-                        label = { Text("4-digit PIN") },
+                        onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) pin = it },
+                        label = { Text("4-Digit PIN") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -224,11 +227,11 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.DarkMode, contentDescription = null, tint = TealSecondary)
+                            Icon(Icons.Default.DarkMode, contentDescription = null, tint = NavyPrimary)
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("Theme Mode", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                            Text("Theme Preference", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             listOf("System", "Light", "Dark").forEach { mode ->
                                 FilterChip(
@@ -242,7 +245,7 @@ fun SettingsScreen(
                 }
             }
 
-            // App Lock Security
+            // Security: App Lock
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -259,14 +262,14 @@ fun SettingsScreen(
                                 Icon(Icons.Default.Lock, contentDescription = null, tint = NavyPrimary)
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column {
-                                    Text("App Lock Protection", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                                    Text("Require 4-digit PIN upon app start", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("App Lock Security", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                                    Text("Require PIN to open app", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                             Switch(
                                 checked = profile.isAppLockEnabled,
-                                onCheckedChange = { isChecked ->
-                                    if (isChecked) {
+                                onCheckedChange = { enable ->
+                                    if (enable) {
                                         showPinDialog = true
                                     } else {
                                         viewModel.setAppLock(false, "")
@@ -286,15 +289,19 @@ fun SettingsScreen(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Data Export & Backup", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Backup, contentDescription = null, tint = NavyPrimary)
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text("Data Backup & Restore", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        }
                         Spacer(modifier = Modifier.height(6.dp))
-                        Text("Export or restore your clients, cases, and tasks as an plain JSON archive (not encrypted).", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
+                        Text(
+                            "Export your entire database (clients, cases, notes, templates) as an offline JSON archive, or restore from a previous backup.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                             Button(
                                 onClick = {
                                     viewModel.exportBackup(context) { file ->
@@ -329,6 +336,44 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text("Restore JSON", fontSize = 12.sp)
                             }
+                        }
+                    }
+                }
+            }
+
+            // Account & Session
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = null, tint = RedUrgent)
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                "Account Session",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            "Manage your login session or sign out of your local desk.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.logout(onSignOut)
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = RedUrgent),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = null, tint = RedUrgent, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Sign Out", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = RedUrgent)
                         }
                     }
                 }

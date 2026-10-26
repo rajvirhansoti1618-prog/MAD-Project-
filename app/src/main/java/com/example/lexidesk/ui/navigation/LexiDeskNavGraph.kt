@@ -8,10 +8,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,6 +24,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
 import com.example.lexidesk.LexiDeskApp
+import com.example.lexidesk.ui.auth.LoginScreen
+import com.example.lexidesk.ui.auth.LoginViewModel
+import com.example.lexidesk.ui.auth.RegisterScreen
+import com.example.lexidesk.ui.auth.RegisterViewModel
 import com.example.lexidesk.ui.calendar.CalendarScreen
 import com.example.lexidesk.ui.calendar.CalendarViewModel
 import com.example.lexidesk.ui.cases.AddEditCaseScreen
@@ -114,6 +120,50 @@ fun LexiDeskAppShell(
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
+            // Login
+            composable(Screen.Login.route) {
+                val loginViewModel: LoginViewModel = viewModel(
+                    factory = LoginViewModel.Factory(app.authRepository)
+                )
+                val userProfile by app.userPreferencesRepository.userProfileFlow.collectAsState(
+                    initial = com.example.lexidesk.data.local.UserProfile()
+                )
+                LoginScreen(
+                    viewModel = loginViewModel,
+                    onLoginSuccess = {
+                        val destination = if (userProfile.isOnboarded) Screen.Dashboard.route else Screen.Onboarding.route
+                        navController.navigate(destination) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.Register.route)
+                    }
+                )
+            }
+
+            // Register
+            composable(Screen.Register.route) {
+                val registerViewModel: RegisterViewModel = viewModel(
+                    factory = RegisterViewModel.Factory(app.authRepository)
+                )
+                val userProfile by app.userPreferencesRepository.userProfileFlow.collectAsState(
+                    initial = com.example.lexidesk.data.local.UserProfile()
+                )
+                RegisterScreen(
+                    viewModel = registerViewModel,
+                    onRegisterSuccess = {
+                        val destination = if (userProfile.isOnboarded) Screen.Dashboard.route else Screen.Onboarding.route
+                        navController.navigate(destination) {
+                            popUpTo(Screen.Register.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToLogin = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
             // Dashboard
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
@@ -252,7 +302,7 @@ fun LexiDeskAppShell(
                 )
             }
 
-            // Documents List
+            // Documents Vault
             composable(Screen.Documents.route) {
                 DocumentsListScreen(
                     viewModel = documentsViewModel,
@@ -349,7 +399,12 @@ fun LexiDeskAppShell(
                 SettingsScreen(
                     viewModel = settingsViewModel,
                     onBackClick = { navController.popBackStack() },
-                    onResetOnboarding = { navController.navigate(Screen.Onboarding.route) }
+                    onResetOnboarding = { navController.navigate(Screen.Onboarding.route) },
+                    onSignOut = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 )
             }
 

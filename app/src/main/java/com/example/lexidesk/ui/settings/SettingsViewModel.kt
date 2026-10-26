@@ -39,13 +39,8 @@ class SettingsViewModel(private val app: LexiDeskApp) : ViewModel() {
             return
         }
         viewModelScope.launch {
-            try {
-                app.userPreferencesRepository.setAppLock(enabled, pin)
-                onResult?.invoke(true)
-            } catch (e: Exception) {
-                Log.e("SettingsViewModel", "Failed to update app lock settings", e)
-                onResult?.invoke(false)
-            }
+            app.userPreferencesRepository.setAppLock(enabled, pin)
+            onResult?.invoke(true)
         }
     }
 
@@ -77,6 +72,13 @@ class SettingsViewModel(private val app: LexiDeskApp) : ViewModel() {
         viewModelScope.launch {
             app.userPreferencesRepository.resetOnboarding()
             onReset()
+        }
+    }
+
+    fun logout(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            app.authRepository.logout()
+            onComplete()
         }
     }
 }
