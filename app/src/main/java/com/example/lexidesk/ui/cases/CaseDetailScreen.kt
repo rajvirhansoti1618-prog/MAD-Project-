@@ -105,9 +105,13 @@ fun CaseDetailScreen(
 
         AlertDialog(
             onDismissRequest = { showAddNoteDialog = false },
+            shape = RoundedCornerShape(24.dp),
             title = { Text("Add Case Proceeding Note", style = MaterialTheme.typography.titleLarge) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     OutlinedTextField(
                         value = noteTitle,
                         onValueChange = { noteTitle = it },
