@@ -183,6 +183,9 @@ fun EmptyStateView(
     description: String,
     actionButtonText: String? = null,
     onActionClick: (() -> Unit)? = null,
+    actionButtonIcon: ImageVector? = null,
+    secondaryButtonText: String? = null,
+    onSecondaryActionClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -226,7 +229,20 @@ fun EmptyStateView(
                 onClick = onActionClick,
                 shape = RoundedCornerShape(12.dp)
             ) {
+                if (actionButtonIcon != null) {
+                    Icon(actionButtonIcon, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                }
                 Text(text = actionButtonText)
+            }
+        }
+        if (secondaryButtonText != null && onSecondaryActionClick != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onSecondaryActionClick,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(text = secondaryButtonText)
             }
         }
     }
