@@ -114,6 +114,7 @@ fun GlobalSearchScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
+                .androidx.compose.foundation.layout.imePadding()
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 LexiSearchBar(
@@ -141,12 +142,12 @@ fun GlobalSearchScreen(
                         item { Text("Clients (${filteredClients.size})", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) }
                         items(filteredClients) { client ->
                             Card(
-                                modifier = Modifier.fillMaxWidth().clickable { onClientClick(client.id) },
-                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.fillMaxWidth().androidx.compose.foundation.layout.sizeIn(minHeight = 48.dp).clickable { onClientClick(client.id) },
+                                shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.People, contentDescription = null, tint = NavyPrimary)
+                                    Icon(Icons.Default.People, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Text(client.fullName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
                                 }
@@ -159,8 +160,8 @@ fun GlobalSearchScreen(
                         item { Text("Cases & Matters (${filteredCases.size})", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) }
                         items(filteredCases) { c ->
                             Card(
-                                modifier = Modifier.fillMaxWidth().clickable { onCaseClick(c.id) },
-                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.fillMaxWidth().androidx.compose.foundation.layout.sizeIn(minHeight = 48.dp).clickable { onCaseClick(c.id) },
+                                shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -177,8 +178,8 @@ fun GlobalSearchScreen(
                         item { Text("Tasks (${filteredTasks.size})", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) }
                         items(filteredTasks) { task ->
                             Card(
-                                modifier = Modifier.fillMaxWidth().clickable { onTaskClick(task.id) },
-                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.fillMaxWidth().androidx.compose.foundation.layout.sizeIn(minHeight = 48.dp).clickable { onTaskClick(task.id) },
+                                shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -195,12 +196,12 @@ fun GlobalSearchScreen(
                         item { Text("Documents (${filteredDocs.size})", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) }
                         items(filteredDocs) { doc ->
                             Card(
-                                modifier = Modifier.fillMaxWidth().clickable { onDocumentClick(doc.id) },
-                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.fillMaxWidth().androidx.compose.foundation.layout.sizeIn(minHeight = 48.dp).clickable { onDocumentClick(doc.id) },
+                                shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Description, contentDescription = null, tint = NavyPrimary)
+                                    Icon(Icons.Default.Description, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Text(doc.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
                                 }
@@ -214,7 +215,7 @@ fun GlobalSearchScreen(
                         items(filteredNotes) { note ->
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp),
+                                shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -241,7 +242,7 @@ fun GlobalSearchScreen(
                         items(filteredDrafts) { draft ->
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp),
+                                shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
