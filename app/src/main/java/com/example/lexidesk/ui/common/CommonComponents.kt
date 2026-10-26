@@ -137,48 +137,72 @@ fun SummaryMetricCard(
 @Composable
 fun StatusBadge(status: String, modifier: Modifier = Modifier) {
     val (bgColor, textColor) = when (status.lowercase()) {
-        "completed", "closed" -> GreenSuccess.copy(alpha = 0.15f) to GreenSuccess
-        "in progress" -> TealSecondary.copy(alpha = 0.15f) to TealSecondary
-        "waiting", "on hold" -> AmberAccent.copy(alpha = 0.15f) to AmberAccent
-        "pending", "not started" -> BlueInfo.copy(alpha = 0.15f) to BlueInfo
+        "completed", "closed" -> GreenSuccess.copy(alpha = 0.14f) to GreenSuccess
+        "in progress" -> TealSecondary.copy(alpha = 0.14f) to TealSecondary
+        "waiting", "on hold" -> AmberAccent.copy(alpha = 0.14f) to AmberAccent
+        "pending", "not started" -> BlueInfo.copy(alpha = 0.14f) to BlueInfo
         else -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Surface(
         modifier = modifier.semantics { this.contentDescription = "Status: $status" },
         shape = RoundedCornerShape(50),
-        color = bgColor
+        color = bgColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, textColor.copy(alpha = 0.35f))
     ) {
-        Text(
-            text = status,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = textColor
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(textColor)
+            )
+            Text(
+                text = status,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                color = textColor
+            )
+        }
     }
 }
 
 @Composable
 fun PriorityBadge(priority: String, modifier: Modifier = Modifier) {
     val (bgColor, textColor) = when (priority.lowercase()) {
-        "urgent" -> RedUrgent.copy(alpha = 0.15f) to RedUrgent
-        "high" -> AmberAccent.copy(alpha = 0.15f) to AmberAccent
-        "medium" -> BlueInfo.copy(alpha = 0.15f) to BlueInfo
-        "low" -> GreenSuccess.copy(alpha = 0.15f) to GreenSuccess
+        "urgent" -> RedUrgent.copy(alpha = 0.14f) to RedUrgent
+        "high" -> AmberAccent.copy(alpha = 0.14f) to AmberAccent
+        "medium" -> BlueInfo.copy(alpha = 0.14f) to BlueInfo
+        "low" -> GreenSuccess.copy(alpha = 0.14f) to GreenSuccess
         else -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Surface(
         modifier = modifier.semantics { this.contentDescription = "Priority: $priority" },
         shape = RoundedCornerShape(50),
-        color = bgColor
+        color = bgColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, textColor.copy(alpha = 0.35f))
     ) {
-        Text(
-            text = priority,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-            color = textColor
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(5.dp)
+                    .clip(CircleShape)
+                    .background(textColor)
+            )
+            Text(
+                text = priority,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                color = textColor
+            )
+        }
     }
 }
 
