@@ -307,7 +307,7 @@ fun CalendarScreen(
                                                 .size(36.dp)
                                                 .clip(CircleShape)
                                                 .background(
-                                                    if (isSelected) NavyPrimary else Color.Transparent
+                                                    if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
                                                 )
                                                 .clickable {
                                                     viewModel.onDateSelected(state.selectedYear, state.selectedMonth, dayNumber)
