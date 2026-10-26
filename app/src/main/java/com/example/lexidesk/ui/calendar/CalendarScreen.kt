@@ -104,9 +104,13 @@ fun CalendarScreen(
 
         AlertDialog(
             onDismissRequest = { showAddEventDialog = false },
+            shape = RoundedCornerShape(24.dp),
             title = { Text("Schedule Event / Reminder", style = MaterialTheme.typography.titleLarge) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     OutlinedTextField(
                         value = eventTitle,
                         onValueChange = { eventTitle = it },
