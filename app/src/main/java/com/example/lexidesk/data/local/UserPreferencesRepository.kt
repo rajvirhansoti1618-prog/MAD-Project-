@@ -35,6 +35,9 @@ class UserPreferencesRepository(private val context: Context) {
         val APP_LOCK_ENABLED = booleanPreferencesKey("app_lock_enabled")
         val APP_LOCK_PIN = stringPreferencesKey("app_lock_pin")
         val SAMPLE_DATA_LOADED = booleanPreferencesKey("sample_data_loaded")
+        val AUTH_LOGGED_IN = booleanPreferencesKey("auth_logged_in")
+        val AUTH_USER_EMAIL = stringPreferencesKey("auth_user_email")
+        val AUTH_PASSWORD_HASH = stringPreferencesKey("auth_password_hash")
     }
 
     val userProfileFlow: Flow<UserProfile> = context.dataStore.data.map { preferences ->
@@ -52,6 +55,18 @@ class UserPreferencesRepository(private val context: Context) {
 
     val isSampleDataLoadedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.SAMPLE_DATA_LOADED] ?: false
+    }
+
+    val authLoggedInFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.AUTH_LOGGED_IN] ?: false
+    }
+
+    val authUserEmailFlow: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.AUTH_USER_EMAIL]
+    }
+
+    val authPasswordHashFlow: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.AUTH_PASSWORD_HASH]
     }
 
     suspend fun saveProfile(
@@ -84,6 +99,25 @@ class UserPreferencesRepository(private val context: Context) {
             // NOTE: This is a one-way upgrade — any previously stored plain-text PINs
             // will be invalidated and the user must set a new PIN.
             preferences[PreferencesKeys.APP_LOCK_PIN] = if (pin.isBlank()) "" else hashPin(pin)
+        }
+    }
+
+    suspend fun setAuthState(isLoggedIn: Boolean, email: String? = null, passwordHash: String? = null) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.AUTH_LOGGED_IN] = isLoggedIn
+            if (email != null) {
+                preferences[PreferencesKeys.AUTH_USER_EMAIL] = email
+            }
+            if (passwordHash != null) {
+                preferences[PreferencesKeys.AUTH_PASSWORD_HASH] = passwordHash
+            }
+        }
+    }
+
+    suspend fun clearAuthState() {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.AUTH_LOGGED_IN] = false
+            preferences.remove(PreferencesKeys.AUTH_USER_EMAIL)
         }
     }
 

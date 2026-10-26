@@ -1,6 +1,7 @@
 package com.example.lexidesk
 
 import android.app.Application
+import com.example.lexidesk.data.auth.LocalAuthRepository
 import com.example.lexidesk.data.local.LexiDeskDatabase
 import com.example.lexidesk.data.local.UserPreferencesRepository
 import com.example.lexidesk.data.repository.CaseRepository
@@ -10,6 +11,7 @@ import com.example.lexidesk.data.repository.DocumentRepository
 import com.example.lexidesk.data.repository.NoteRepository
 import com.example.lexidesk.data.repository.ReminderRepository
 import com.example.lexidesk.data.repository.TaskRepository
+import com.example.lexidesk.domain.auth.AuthRepository
 import com.example.lexidesk.notifications.NotificationHelper
 
 class LexiDeskApp : Application() {
@@ -41,6 +43,9 @@ class LexiDeskApp : Application() {
     lateinit var userPreferencesRepository: UserPreferencesRepository
         private set
 
+    lateinit var authRepository: AuthRepository
+        private set
+
     override fun onCreate() {
         super.onCreate()
 
@@ -53,6 +58,7 @@ class LexiDeskApp : Application() {
         noteRepository = NoteRepository(database.noteDao())
         draftTemplateRepository = DraftTemplateRepository(database.draftTemplateDao())
         userPreferencesRepository = UserPreferencesRepository(this)
+        authRepository = LocalAuthRepository(userPreferencesRepository)
 
         NotificationHelper.createNotificationChannels(this)
         com.example.lexidesk.notifications.DeadlineCheckWorker.schedulePeriodicCheck(this)
