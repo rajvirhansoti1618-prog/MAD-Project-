@@ -21,7 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Folder
@@ -33,12 +32,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,6 +49,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.lexidesk.ui.common.DiscardChangesDialog
+import com.example.lexidesk.ui.common.TopBarWithBack
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.TealSecondary
 
@@ -79,6 +78,7 @@ fun AddDocumentScreen(
     var clientDropdownExpanded by remember { mutableStateOf(false) }
     var caseDropdownExpanded by remember { mutableStateOf(false) }
     var categoryDropdownExpanded by remember { mutableStateOf(false) }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -105,15 +105,29 @@ fun AddDocumentScreen(
         "Other"
     )
 
+    val isDirty = selectedUri != null || title.isNotBlank() || description.isNotBlank()
+    val handleBack = {
+        if (isDirty) {
+            showDiscardDialog = true
+        } else {
+            onBackClick()
+        }
+    }
+
+    DiscardChangesDialog(
+        isOpen = showDiscardDialog,
+        onConfirmDiscard = {
+            showDiscardDialog = false
+            onBackClick()
+        },
+        onDismiss = { showDiscardDialog = false }
+    )
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Import Document to Vault") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
+            TopBarWithBack(
+                title = "Import Document to Vault",
+                onBackClick = handleBack
             )
         }
     ) { paddingValues ->
