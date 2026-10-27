@@ -60,6 +60,8 @@ class LexiDeskApp : Application() {
         userPreferencesRepository = UserPreferencesRepository(this)
         authRepository = LocalAuthRepository(userPreferencesRepository)
 
+        com.example.lexidesk.data.firebase.FirebaseConfig.initialize(this)
+
         NotificationHelper.createNotificationChannels(this)
         com.example.lexidesk.notifications.DeadlineCheckWorker.schedulePeriodicCheck(this)
     }
