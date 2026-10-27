@@ -70,11 +70,17 @@
 - **Visual Progress Metrics**: Real-time delivery completion rate progress bar.
 - **Executive PDF Export**: Generate and share high-level executive summaries in PDF format.
 
-### 🔒 K. Security, App Lock & Offline Backups
+### ☁️ K. Live Multi-Device Cloud Synchronization (Firebase Realtime Database)
+- **Live Bi-Directional Sync**: Instant synchronization of clients, cases, tasks, notes, and draft templates across authorized devices.
+- **Offline-First Resilience**: Local Room database operates fully offline; pending offline changes are queued and retried automatically via `WorkManager`.
+- **Last-Write-Wins (LWW) Conflict Resolution**: Safe resolution using microsecond timestamps and tombstone deletions.
+- **Strict Security Rules**: Zero public access; authenticated access model enforced through `firebase-database.rules.json`. See [Firebase Sync Guide](docs/FirebaseRealtimeSyncSetup.md).
+
+### 🔒 L. Security, App Lock & Offline Backups
 - **App Lock PIN Protection**: Optional 4-digit PIN lock to protect sensitive client data with SHA-256 hash security.
 - **JSON Backup & Restore**: Export all client records, cases, and tasks to an offline JSON archive, or restore them seamlessly.
 
-### 🔑 L. Authentication & Session Gate
+### 🔑 M. Authentication & Session Gate
 - **Clean Architecture Interface**: Domain-level `AuthRepository` and `AuthResult` sealed classes enabling clean separation between UI and auth providers.
 - **Local Practice Account**: Full offline sign-in and account registration powered by Jetpack DataStore Preferences and SHA-256 password hashing.
 - **Reactive Session Gating**: `MainActivity` and `LexiDeskAppShell` dynamically direct unauthenticated users to the Login/Register flow, while maintaining seamless return for active sessions.
