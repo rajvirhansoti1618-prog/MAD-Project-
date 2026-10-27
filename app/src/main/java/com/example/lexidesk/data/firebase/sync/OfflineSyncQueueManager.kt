@@ -1,12 +1,8 @@
 package com.example.lexidesk.data.firebase.sync
 
 import android.content.Context
-import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.File
+import java.util.Base64
 
 data class PendingMutation(
     val id: String,
@@ -19,11 +15,12 @@ data class PendingMutation(
 )
 
 class OfflineSyncQueueManager(
-    private val context: Context
+    private val storageDirectory: File
 ) {
-    private val tag = "OfflineSyncQueue"
+    constructor(context: Context) : this(context.filesDir)
+
     private val queueFile: File by lazy {
-        File(context.filesDir, "pending_sync_mutations.json")
+        File(storageDirectory, "pending_sync_mutations.txt")
     }
 
     @Synchronized
@@ -33,7 +30,6 @@ class OfflineSyncQueueManager(
         current.removeAll { it.entityType == mutation.entityType && it.recordId == mutation.recordId }
         current.add(mutation)
         saveQueueInternal(current)
-        Log.d(tag, "Enqueued offline mutation: ${mutation.entityType}_${mutation.recordId} (${mutation.action})")
     }
 
     @Synchronized
@@ -62,49 +58,40 @@ class OfflineSyncQueueManager(
     private fun loadQueueInternal(): List<PendingMutation> {
         if (!queueFile.exists()) return emptyList()
         return try {
-            val content = queueFile.readText()
-            if (content.isBlank()) return emptyList()
-            val array = JSONArray(content)
-            val list = mutableListOf<PendingMutation>()
-            for (i in 0 until array.length()) {
-                val obj = array.getJSONObject(i)
-                list.add(
+            val lines = queueFile.readLines()
+            lines.mapNotNull { line ->
+                val parts = line.split("|", limit = 7)
+                if (parts.size >= 7) {
+                    val decodedPayload = try {
+                        String(Base64.getDecoder().decode(parts[6]), Charsets.UTF_8)
+                    } catch (_: Exception) {
+                        "{}"
+                    }
                     PendingMutation(
-                        id = obj.getString("id"),
-                        entityType = obj.getString("entityType"),
-                        recordId = obj.getLong("recordId"),
-                        action = obj.getString("action"),
-                        payloadJson = obj.optString("payloadJson", "{}"),
-                        timestamp = obj.optLong("timestamp", System.currentTimeMillis()),
-                        retryCount = obj.optInt("retryCount", 0)
+                        id = parts[0],
+                        entityType = parts[1],
+                        recordId = parts[2].toLongOrNull() ?: 0L,
+                        action = parts[3],
+                        timestamp = parts[4].toLongOrNull() ?: System.currentTimeMillis(),
+                        retryCount = parts[5].toIntOrNull() ?: 0,
+                        payloadJson = decodedPayload
                     )
-                )
+                } else null
             }
-            list
-        } catch (e: Exception) {
-            Log.w(tag, "Failed reading queue file: ${e.message}")
+        } catch (_: Exception) {
             emptyList()
         }
     }
 
     private fun saveQueueInternal(list: List<PendingMutation>) {
         try {
-            val array = JSONArray()
-            for (m in list) {
-                val obj = JSONObject().apply {
-                    put("id", m.id)
-                    put("entityType", m.entityType)
-                    put("recordId", m.recordId)
-                    put("action", m.action)
-                    put("payloadJson", m.payloadJson)
-                    put("timestamp", m.timestamp)
-                    put("retryCount", m.retryCount)
-                }
-                array.put(obj)
+            val content = list.joinToString("\n") { m ->
+                val encodedPayload = Base64.getEncoder().encodeToString(m.payloadJson.toByteArray(Charsets.UTF_8))
+                "${m.id}|${m.entityType}|${m.recordId}|${m.action}|${m.timestamp}|${m.retryCount}|$encodedPayload"
             }
-            queueFile.writeText(array.toString(2))
-        } catch (e: Exception) {
-            Log.w(tag, "Failed saving queue file: ${e.message}")
+            queueFile.writeText(content)
+        } catch (_: Exception) {
+            // Ignored in headless/offline
         }
     }
 }
