@@ -4,7 +4,10 @@ import com.example.lexidesk.data.dao.CaseDao
 import com.example.lexidesk.data.entity.CaseEntity
 import kotlinx.coroutines.flow.Flow
 
-class CaseRepository(private val caseDao: CaseDao) {
+class CaseRepository(
+    private val caseDao: CaseDao,
+    private val syncPublisher: com.example.lexidesk.data.firebase.sync.CloudSyncPublisher? = null
+) {
 
     val allCases: Flow<List<CaseEntity>> = caseDao.getAllCases()
     val activeCasesCount: Flow<Int> = caseDao.getActiveCasesCount()
@@ -21,11 +24,25 @@ class CaseRepository(private val caseDao: CaseDao) {
 
     fun getUpcomingCases(limit: Int = 5): Flow<List<CaseEntity>> = caseDao.getUpcomingCases(limit)
 
-    suspend fun insertCase(caseItem: CaseEntity): Long = caseDao.insertCase(caseItem)
+    suspend fun insertCase(caseItem: CaseEntity): Long {
+        val id = caseDao.insertCase(caseItem)
+        val inserted = if (caseItem.id == 0L) caseItem.copy(id = id) else caseItem
+        syncPublisher?.publishCaseUpsert(inserted)
+        return id
+    }
 
-    suspend fun updateCase(caseItem: CaseEntity) = caseDao.updateCase(caseItem)
+    suspend fun updateCase(caseItem: CaseEntity) {
+        caseDao.updateCase(caseItem)
+        syncPublisher?.publishCaseUpsert(caseItem)
+    }
 
-    suspend fun deleteCase(caseItem: CaseEntity) = caseDao.deleteCase(caseItem)
+    suspend fun deleteCase(caseItem: CaseEntity) {
+        caseDao.deleteCase(caseItem)
+        syncPublisher?.publishCaseDelete(caseItem.id)
+    }
 
-    suspend fun deleteCaseById(id: Long) = caseDao.deleteCaseById(id)
+    suspend fun deleteCaseById(id: Long) {
+        caseDao.deleteCaseById(id)
+        syncPublisher?.publishCaseDelete(id)
+    }
 }

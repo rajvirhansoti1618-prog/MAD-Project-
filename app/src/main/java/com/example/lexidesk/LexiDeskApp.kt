@@ -2,6 +2,11 @@ package com.example.lexidesk
 
 import android.app.Application
 import com.example.lexidesk.data.auth.LocalAuthRepository
+import com.example.lexidesk.data.firebase.CloudDataSource
+import com.example.lexidesk.data.firebase.FirebaseConfig
+import com.example.lexidesk.data.firebase.FirebaseRealtimeDataSource
+import com.example.lexidesk.data.firebase.sync.CloudSyncPublisher
+import com.example.lexidesk.data.firebase.sync.DefaultCloudSyncPublisher
 import com.example.lexidesk.data.local.LexiDeskDatabase
 import com.example.lexidesk.data.local.UserPreferencesRepository
 import com.example.lexidesk.data.repository.CaseRepository
@@ -17,6 +22,12 @@ import com.example.lexidesk.notifications.NotificationHelper
 class LexiDeskApp : Application() {
 
     lateinit var database: LexiDeskDatabase
+        private set
+
+    lateinit var cloudDataSource: CloudDataSource
+        private set
+
+    lateinit var syncPublisher: CloudSyncPublisher
         private set
 
     lateinit var clientRepository: ClientRepository
@@ -50,17 +61,20 @@ class LexiDeskApp : Application() {
         super.onCreate()
 
         database = LexiDeskDatabase.getDatabase(this)
-        clientRepository = ClientRepository(database.clientDao())
-        caseRepository = CaseRepository(database.caseDao())
-        taskRepository = TaskRepository(database.taskDao())
+        FirebaseConfig.initialize(this)
+
+        cloudDataSource = FirebaseRealtimeDataSource(FirebaseConfig.getDatabase(this))
+        syncPublisher = DefaultCloudSyncPublisher(cloudDataSource)
+
+        clientRepository = ClientRepository(database.clientDao(), syncPublisher)
+        caseRepository = CaseRepository(database.caseDao(), syncPublisher)
+        taskRepository = TaskRepository(database.taskDao(), syncPublisher)
         documentRepository = DocumentRepository(database.documentDao())
         reminderRepository = ReminderRepository(database.reminderDao())
-        noteRepository = NoteRepository(database.noteDao())
-        draftTemplateRepository = DraftTemplateRepository(database.draftTemplateDao())
+        noteRepository = NoteRepository(database.noteDao(), syncPublisher)
+        draftTemplateRepository = DraftTemplateRepository(database.draftTemplateDao(), syncPublisher)
         userPreferencesRepository = UserPreferencesRepository(this)
         authRepository = LocalAuthRepository(userPreferencesRepository)
-
-        com.example.lexidesk.data.firebase.FirebaseConfig.initialize(this)
 
         NotificationHelper.createNotificationChannels(this)
         com.example.lexidesk.notifications.DeadlineCheckWorker.schedulePeriodicCheck(this)
