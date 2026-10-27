@@ -7,7 +7,9 @@ import com.example.lexidesk.data.firebase.FirebaseConfig
 import com.example.lexidesk.data.firebase.FirebaseRealtimeDataSource
 import com.example.lexidesk.data.firebase.sync.CloudSyncPublisher
 import com.example.lexidesk.data.firebase.sync.DefaultCloudSyncPublisher
+import com.example.lexidesk.data.firebase.sync.OfflineSyncQueueManager
 import com.example.lexidesk.data.firebase.sync.RealtimeSyncSubscriber
+import com.example.lexidesk.data.firebase.sync.SyncRetryWorker
 import com.example.lexidesk.data.local.LexiDeskDatabase
 import com.example.lexidesk.data.local.UserPreferencesRepository
 import com.example.lexidesk.data.repository.CaseRepository
@@ -26,6 +28,9 @@ class LexiDeskApp : Application() {
         private set
 
     lateinit var cloudDataSource: CloudDataSource
+        private set
+
+    lateinit var offlineQueueManager: OfflineSyncQueueManager
         private set
 
     lateinit var syncPublisher: CloudSyncPublisher
@@ -68,7 +73,8 @@ class LexiDeskApp : Application() {
         FirebaseConfig.initialize(this)
 
         cloudDataSource = FirebaseRealtimeDataSource(FirebaseConfig.getDatabase(this))
-        syncPublisher = DefaultCloudSyncPublisher(cloudDataSource)
+        offlineQueueManager = OfflineSyncQueueManager(this)
+        syncPublisher = DefaultCloudSyncPublisher(cloudDataSource, offlineQueueManager)
 
         clientRepository = ClientRepository(database.clientDao(), syncPublisher)
         caseRepository = CaseRepository(database.caseDao(), syncPublisher)
@@ -89,6 +95,8 @@ class LexiDeskApp : Application() {
             draftTemplateDao = database.draftTemplateDao()
         )
         realtimeSyncSubscriber.startListening()
+
+        SyncRetryWorker.schedulePeriodic(this)
 
         NotificationHelper.createNotificationChannels(this)
         com.example.lexidesk.notifications.DeadlineCheckWorker.schedulePeriodicCheck(this)
