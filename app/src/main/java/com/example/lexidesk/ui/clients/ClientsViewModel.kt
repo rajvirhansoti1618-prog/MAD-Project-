@@ -131,34 +131,39 @@ class ClientsViewModel(private val app: LexiDeskApp) : ViewModel() {
         companyName: String,
         notes: String,
         tags: String,
-        onSuccess: (Long) -> Unit
+        onSuccess: (Long) -> Unit,
+        onError: ((Throwable) -> Unit)? = null
     ) {
         viewModelScope.launch {
-            // Preserve original createdAt when updating an existing client
-            val existingCreatedAt = if (id != 0L) {
-                app.clientRepository.getClientByIdOnce(id)?.createdAt ?: System.currentTimeMillis()
-            } else {
-                System.currentTimeMillis()
+            try {
+                // Preserve original createdAt when updating an existing client
+                val existingCreatedAt = if (id != 0L) {
+                    app.clientRepository.getClientByIdOnce(id)?.createdAt ?: System.currentTimeMillis()
+                } else {
+                    System.currentTimeMillis()
+                }
+                val client = ClientEntity(
+                    id = id,
+                    fullName = fullName.trim(),
+                    clientType = clientType,
+                    phone = phone.trim(),
+                    email = email.trim(),
+                    address = address.trim(),
+                    companyName = companyName.trim(),
+                    notes = notes.trim(),
+                    tags = tags.trim(),
+                    createdAt = existingCreatedAt
+                )
+                val newId = if (id == 0L) {
+                    app.clientRepository.insertClient(client)
+                } else {
+                    app.clientRepository.updateClient(client)
+                    id
+                }
+                onSuccess(newId)
+            } catch (e: Throwable) {
+                onError?.invoke(e)
             }
-            val client = ClientEntity(
-                id = id,
-                fullName = fullName.trim(),
-                clientType = clientType,
-                phone = phone.trim(),
-                email = email.trim(),
-                address = address.trim(),
-                companyName = companyName.trim(),
-                notes = notes.trim(),
-                tags = tags.trim(),
-                createdAt = existingCreatedAt
-            )
-            val newId = if (id == 0L) {
-                app.clientRepository.insertClient(client)
-            } else {
-                app.clientRepository.updateClient(client)
-                id
-            }
-            onSuccess(newId)
         }
     }
 

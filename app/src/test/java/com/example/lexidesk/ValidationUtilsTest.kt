@@ -8,6 +8,34 @@ import org.junit.Test
 class ValidationUtilsTest {
 
     @Test
+    fun isValid10DigitPhone_withValid10Digits_returnsTrue() {
+        assertTrue(ValidationUtils.isValid10DigitPhone("9876543210"))
+        assertTrue(ValidationUtils.isValid10DigitPhone("1234567890"))
+        assertTrue(ValidationUtils.isValid10DigitPhone("0123456789"))
+    }
+
+    @Test
+    fun isValid10DigitPhone_withInvalidPhone_returnsFalse() {
+        // Less than 10 digits
+        assertFalse(ValidationUtils.isValid10DigitPhone("123456789"))
+        assertFalse(ValidationUtils.isValid10DigitPhone("98765"))
+        assertFalse(ValidationUtils.isValid10DigitPhone(""))
+        assertFalse(ValidationUtils.isValid10DigitPhone(null))
+        assertFalse(ValidationUtils.isValid10DigitPhone("          "))
+
+        // More than 10 digits
+        assertFalse(ValidationUtils.isValid10DigitPhone("98765432101"))
+        assertFalse(ValidationUtils.isValid10DigitPhone("123456789012345"))
+
+        // Non-digit characters, spaces, letters, or symbols
+        assertFalse(ValidationUtils.isValid10DigitPhone("987654321a"))
+        assertFalse(ValidationUtils.isValid10DigitPhone("98765 43210"))
+        assertFalse(ValidationUtils.isValid10DigitPhone("+9198765432"))
+        assertFalse(ValidationUtils.isValid10DigitPhone("98765-43210"))
+        assertFalse(ValidationUtils.isValid10DigitPhone("(987)654321"))
+    }
+
+    @Test
     fun isValidPhone_withValidDigits_returnsTrue() {
         assertTrue(ValidationUtils.isValidPhone("1234567"))
         assertTrue(ValidationUtils.isValidPhone("9876543210"))
@@ -39,6 +67,7 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidEmailFormat("test@example.com"))
         assertTrue(ValidationUtils.isValidEmailFormat("advocate.sharma@lawfirm.co.in"))
         assertTrue(ValidationUtils.isValidEmailFormat("audit.team_123@corporation.org"))
+        assertTrue(ValidationUtils.isValidEmail("test@example.com"))
     }
 
     @Test
@@ -48,6 +77,21 @@ class ValidationUtilsTest {
         assertFalse(ValidationUtils.isValidEmailFormat("user@.com"))
         assertFalse(ValidationUtils.isValidEmailFormat(null))
         assertFalse(ValidationUtils.isValidEmailFormat(""))
+        assertFalse(ValidationUtils.isValidEmail(null))
+        assertFalse(ValidationUtils.isValidEmail(""))
+    }
+
+    @Test
+    fun isValidEmail_rejectsCommonInvalidFormats() {
+        // Explicitly tests: abc, abc@, abc.com, abc@domain
+        assertFalse(ValidationUtils.isValidEmail("abc"))
+        assertFalse(ValidationUtils.isValidEmail("abc@"))
+        assertFalse(ValidationUtils.isValidEmail("abc.com"))
+        assertFalse(ValidationUtils.isValidEmail("abc@domain"))
+        assertFalse(ValidationUtils.isValidEmailFormat("abc"))
+        assertFalse(ValidationUtils.isValidEmailFormat("abc@"))
+        assertFalse(ValidationUtils.isValidEmailFormat("abc.com"))
+        assertFalse(ValidationUtils.isValidEmailFormat("abc@domain"))
     }
 
     @Test

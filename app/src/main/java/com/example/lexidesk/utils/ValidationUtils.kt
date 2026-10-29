@@ -3,12 +3,6 @@ package com.example.lexidesk.utils
 import android.util.Patterns
 
 object ValidationUtils {
-    /**
-     * Returns true if the given email address is syntactically valid.
-     */
-    fun isValidEmail(email: String?): Boolean {
-        return !email.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
     private val EMAIL_REGEX = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
 
     /**
@@ -16,6 +10,22 @@ object ValidationUtils {
      */
     fun isValidEmailFormat(email: String?): Boolean {
         return !email.isNullOrBlank() && email.trim().matches(EMAIL_REGEX)
+    }
+
+    /**
+     * Returns true if the given email address is syntactically valid.
+     */
+    fun isValidEmail(email: String?): Boolean {
+        return isValidEmailFormat(email)
+    }
+
+    /**
+     * Returns true if the given phone number contains exactly 10 numeric digits.
+     */
+    fun isValid10DigitPhone(phone: String?): Boolean {
+        if (phone.isNullOrBlank()) return false
+        val clean = phone.trim()
+        return clean.length == 10 && clean.all { it.isDigit() }
     }
 
     /**
