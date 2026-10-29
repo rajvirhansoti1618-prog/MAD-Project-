@@ -29,6 +29,14 @@ import com.example.lexidesk.ui.auth.RegisterScreen
 import com.example.lexidesk.ui.auth.RegisterViewModel
 import com.example.lexidesk.ui.calendar.CalendarScreen
 import com.example.lexidesk.ui.calendar.CalendarViewModel
+import com.example.lexidesk.ui.calendar.CalendarViewModelFactory
+import com.example.lexidesk.ui.clients.ClientsViewModelFactory
+import com.example.lexidesk.ui.cases.CasesViewModelFactory
+import com.example.lexidesk.ui.tasks.TasksViewModelFactory
+import com.example.lexidesk.ui.documents.DocumentsViewModelFactory
+import com.example.lexidesk.ui.dashboard.DashboardViewModelFactory
+import com.example.lexidesk.ui.templates.TemplatesViewModelFactory
+import com.example.lexidesk.ui.settings.SettingsViewModelFactory
 import com.example.lexidesk.ui.cases.AddEditCaseScreen
 import com.example.lexidesk.ui.cases.CaseDetailScreen
 import com.example.lexidesk.ui.cases.CasesListScreen
@@ -63,15 +71,15 @@ fun LexiDeskAppShell(
 ) {
     val navController = rememberNavController()
 
-    // Shared ViewModels initialized with app scope
-    val dashboardViewModel = DashboardViewModel(app)
-    val clientsViewModel = ClientsViewModel(app)
-    val casesViewModel = CasesViewModel(app)
-    val tasksViewModel = TasksViewModel(app)
-    val documentsViewModel = DocumentsViewModel(app)
-    val calendarViewModel = CalendarViewModel(app)
-    val templatesViewModel = TemplatesViewModel(app)
-    val settingsViewModel = SettingsViewModel(app)
+    // Shared ViewModels - created via factories to comply with Compose lifecycle rules
+    val dashboardViewModel: DashboardViewModel = viewModel(factory = DashboardViewModelFactory(app))
+    val clientsViewModel: ClientsViewModel = viewModel(factory = ClientsViewModelFactory(app))
+    val casesViewModel: CasesViewModel = viewModel(factory = CasesViewModelFactory(app))
+    val tasksViewModel: TasksViewModel = viewModel(factory = TasksViewModelFactory(app))
+    val documentsViewModel: DocumentsViewModel = viewModel(factory = DocumentsViewModelFactory(app))
+    val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModelFactory(app))
+    val templatesViewModel: TemplatesViewModel = viewModel(factory = TemplatesViewModelFactory(app))
+    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(app))
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

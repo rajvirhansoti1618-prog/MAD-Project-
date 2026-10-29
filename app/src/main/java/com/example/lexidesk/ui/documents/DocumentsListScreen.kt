@@ -76,6 +76,7 @@ fun DocumentsListScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.documentsUiState.collectAsState()
+    val errFileNotFound = androidx.compose.ui.res.stringResource(R.string.error_file_not_found)
     var docToDelete by remember { mutableStateOf<DocumentEntity?>(null) }
 
     if (docToDelete != null) {
@@ -207,7 +208,7 @@ fun DocumentsListScreen(
                                 if (file.exists()) {
                                     PdfGenerator.viewDocument(context, file, doc.fileType)
                                 } else {
-                                    Toast.makeText(context, context.getString(R.string.error_file_not_found), Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, errFileNotFound, Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onShare = {
@@ -215,7 +216,7 @@ fun DocumentsListScreen(
                                 if (file.exists()) {
                                     PdfGenerator.sharePdf(context, file, doc.title)
                                 } else {
-                                    Toast.makeText(context, context.getString(R.string.error_file_not_found), Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, errFileNotFound, Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onDelete = { docToDelete = doc }

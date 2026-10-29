@@ -80,6 +80,10 @@ fun AddEditCaseScreen(
     var description by remember { mutableStateOf("") }
     var existingNotes by remember { mutableStateOf("") }
 
+    val errCaseTitleRequired = androidx.compose.ui.res.stringResource(R.string.error_case_title_required)
+    val errCaseRefLength = androidx.compose.ui.res.stringResource(R.string.error_case_ref_length)
+    val errCaseDueBeforeStart = androidx.compose.ui.res.stringResource(R.string.error_case_due_before_start)
+
     var titleError by remember { mutableStateOf<String?>(null) }
     var referenceNumberError by remember { mutableStateOf<String?>(null) }
     var dueDateError by remember { mutableStateOf<String?>(null) }
@@ -369,15 +373,15 @@ fun AddEditCaseScreen(
                     val cleanTitle = title.trim()
                     val cleanRef = referenceNumber.trim()
                     if (cleanTitle.isBlank()) {
-                        titleError = context.getString(R.string.error_case_title_required)
+                        titleError = errCaseTitleRequired
                         return@Button
                     }
                     if (cleanRef.isNotBlank() && cleanRef.length < 3) {
-                        referenceNumberError = context.getString(R.string.error_case_ref_length)
+                        referenceNumberError = errCaseRefLength
                         return@Button
                     }
                     if (startDate != null && dueDate != null && dueDate!! < startDate!!) {
-                        dueDateError = context.getString(R.string.error_case_due_before_start)
+                        dueDateError = errCaseDueBeforeStart
                         return@Button
                     }
                     viewModel.saveCase(
