@@ -1,9 +1,13 @@
 package com.example.lexidesk.ui.scanner
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,7 +32,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.NoteAdd
-import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,6 +46,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,10 +60,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.example.lexidesk.scanner.TextRecognitionHelper
 import com.example.lexidesk.ui.theme.NavyPrimary
 import com.example.lexidesk.ui.theme.TealSecondary
 import kotlinx.coroutines.launch
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,22 +81,137 @@ fun ScannerScreen(
     var extractedText by remember { mutableStateOf("") }
     var isProcessing by remember { mutableStateOf(false) }
 
+    // Camera permission state
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showPermanentlyDeniedDialog by remember { mutableStateOf(false) }
+    var permissionRequestCount by remember { mutableStateOf(0) }
+
+    // Create a temp file URI for camera capture via FileProvider
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    fun createCameraUri(): Uri {
+        val imageFile = File(context.cacheDir, "scan_${System.currentTimeMillis()}.jpg")
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            imageFile
+        )
+    }
+
+    // Process a captured/selected image through OCR
+    fun processImage(uri: Uri) {
+        selectedImageUri = uri
+        isProcessing = true
+        coroutineScope.launch {
+            val result = TextRecognitionHelper.recognizeTextFromUri(context, uri)
+            isProcessing = false
+            result.onSuccess { text ->
+                extractedText = text.ifBlank { "No readable text detected in the selected image." }
+            }.onFailure {
+                extractedText = "Error during OCR extraction: ${it.localizedMessage}"
+            }
+        }
+    }
+
+    // Gallery picker launcher (existing functionality)
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            selectedImageUri = uri
-            isProcessing = true
-            coroutineScope.launch {
-                val result = TextRecognitionHelper.recognizeTextFromUri(context, uri)
-                isProcessing = false
-                result.onSuccess { text ->
-                    extractedText = text.ifBlank { "No readable text detected in the selected image." }
-                }.onFailure {
-                    extractedText = "Error during OCR extraction: ${it.localizedMessage}"
-                }
+            processImage(uri)
+        }
+    }
+
+    // Camera capture launcher
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success: Boolean ->
+        if (success) {
+            cameraImageUri?.let { uri -> processImage(uri) }
+        }
+    }
+
+    // Camera permission launcher
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission granted — launch camera
+            val uri = createCameraUri()
+            cameraImageUri = uri
+            cameraLauncher.launch(uri)
+        } else {
+            permissionRequestCount++
+            if (permissionRequestCount >= 2) {
+                // User denied twice — likely permanently denied
+                showPermanentlyDeniedDialog = true
+            } else {
+                showPermissionDeniedDialog = true
             }
         }
+    }
+
+    fun launchCamera() {
+        val permission = Manifest.permission.CAMERA
+        when {
+            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> {
+                // Already granted — launch camera directly
+                val uri = createCameraUri()
+                cameraImageUri = uri
+                cameraLauncher.launch(uri)
+            }
+            else -> {
+                // Request permission
+                cameraPermissionLauncher.launch(permission)
+            }
+        }
+    }
+
+    // Permission denied dialog — first denial
+    if (showPermissionDeniedDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDeniedDialog = false },
+            title = { Text("Camera Permission Required") },
+            text = { Text("LexiDesk needs camera access to scan documents. Please grant the permission to use the scanner.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showPermissionDeniedDialog = false
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }) {
+                    Text("Try Again")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionDeniedDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Permanently denied dialog — open Settings
+    if (showPermanentlyDeniedDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermanentlyDeniedDialog = false },
+            title = { Text("Camera Permission Required") },
+            text = { Text("Camera permission has been denied. Please enable it manually in Settings → Apps → LexiDesk → Permissions → Camera.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showPermanentlyDeniedDialog = false
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                }) {
+                    Text("Open Settings")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermanentlyDeniedDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -126,7 +249,7 @@ fun ScannerScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Select a document photo, contract scan, or receipt to extract text instantly using on-device machine learning.",
+                        text = "Scan a document with the camera or select a photo to extract text using on-device machine learning.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -136,15 +259,27 @@ fun ScannerScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        // Camera Scan button
                         Button(
-                            onClick = { imagePickerLauncher.launch("image/*") },
+                            onClick = { launchCamera() },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
+                            colors = ButtonDefaults.buttonColors(containerColor = TealSecondary)
+                        ) {
+                            Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Scan Document", fontSize = 12.sp)
+                        }
+
+                        // Gallery pick button (existing)
+                        OutlinedButton(
+                            onClick = { imagePickerLauncher.launch("image/*") },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Icon(Icons.Default.Image, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Pick Document Image", fontSize = 12.sp)
+                            Text("Pick Image", fontSize = 12.sp)
                         }
                     }
                 }
