@@ -231,3 +231,10 @@ Authorized Signature
         return file
     }
 }
+
+class TemplatesViewModelFactory(private val app: com.example.lexidesk.LexiDeskApp) : androidx.lifecycle.ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        return TemplatesViewModel(app) as T
+    }
+}

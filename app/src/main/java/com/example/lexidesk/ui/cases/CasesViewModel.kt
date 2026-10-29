@@ -207,3 +207,10 @@ class CasesViewModel(private val app: LexiDeskApp) : ViewModel() {
         return app.caseRepository.getCaseByIdOnce(id)
     }
 }
+
+class CasesViewModelFactory(private val app: com.example.lexidesk.LexiDeskApp) : androidx.lifecycle.ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        return CasesViewModel(app) as T
+    }
+}

@@ -210,3 +210,10 @@ class TasksViewModel(private val app: LexiDeskApp) : ViewModel() {
         return app.taskRepository.getTaskByIdOnce(id)
     }
 }
+
+class TasksViewModelFactory(private val app: com.example.lexidesk.LexiDeskApp) : androidx.lifecycle.ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        return TasksViewModel(app) as T
+    }
+}

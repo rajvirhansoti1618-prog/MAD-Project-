@@ -82,3 +82,10 @@ class SettingsViewModel(private val app: LexiDeskApp) : ViewModel() {
         }
     }
 }
+
+class SettingsViewModelFactory(private val app: com.example.lexidesk.LexiDeskApp) : androidx.lifecycle.ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        return SettingsViewModel(app) as T
+    }
+}

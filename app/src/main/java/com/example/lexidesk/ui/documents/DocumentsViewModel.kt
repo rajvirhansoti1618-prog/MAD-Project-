@@ -154,3 +154,10 @@ class DocumentsViewModel(private val app: LexiDeskApp) : ViewModel() {
         }
     }
 }
+
+class DocumentsViewModelFactory(private val app: com.example.lexidesk.LexiDeskApp) : androidx.lifecycle.ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        return DocumentsViewModel(app) as T
+    }
+}
