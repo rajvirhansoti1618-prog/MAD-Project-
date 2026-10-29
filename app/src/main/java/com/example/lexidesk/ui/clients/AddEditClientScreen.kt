@@ -127,7 +127,7 @@ fun AddEditClientScreen(
     // Validation computations
     val isNameValid = fullName.trim().isNotBlank()
     val isCompanyValid = clientType != "Business" || companyName.trim().isNotBlank()
-    val isPhoneValid = ValidationUtils.isValid10DigitPhone(phone)
+    val isPhoneValid = ValidationUtils.isValid10DigitPhone(phone.trim())
     val isEmailValid = email.trim().isBlank() || ValidationUtils.isValidEmailFormat(email)
     val isFormValid = isNameValid && isCompanyValid && isPhoneValid && isEmailValid
 
@@ -244,25 +244,34 @@ fun AddEditClientScreen(
             OutlinedTextField(
                 value = phone,
                 onValueChange = { input ->
-                    // Accept only digits 0-9 and limit to exactly 10 digits
-                    val filtered = input.filter { it.isDigit() }.take(10)
-                    phone = filtered
+                    // Do NOT silently strip characters — store raw input (capped to prevent unbounded growth)
+                    val capped = input.take(20)
+                    phone = capped
+                    val trimmed = capped.trim()
                     phoneError = when {
-                        filtered.isNotEmpty() && filtered.length < 10 -> {
-                            "Phone number must be exactly 10 digits (${filtered.length}/10)"
-                        }
-                        else -> null
+                        trimmed.isEmpty() -> null // caught at submit as required field
+                        trimmed.any { it !in '0'..'9' } ->
+                            "Only digits 0–9 are allowed. Remove letters, spaces, or symbols."
+                        trimmed.length < 10 ->
+                            "Phone number must be exactly 10 digits (${trimmed.length}/10)"
+                        trimmed.length > 10 ->
+                            "Phone number must be exactly 10 digits (too many digits entered)"
+                        else -> null // exactly 10 ASCII digits — valid
                     }
                 },
                 label = { Text(stringResource(R.string.phone_label) + " *") },
                 leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Phone number icon") },
                 isError = phoneError != null,
                 supportingText = {
+                    val trimmedPhone = phone.trim()
                     when {
                         phoneError != null -> Text(phoneError!!, color = MaterialTheme.colorScheme.error)
-                        phone.isEmpty() -> Text("Required — exactly 10 digits", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        phone.length == 10 -> Text("10/10 digits entered", color = MaterialTheme.colorScheme.primary)
-                        else -> Text("${phone.length}/10 digits", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        trimmedPhone.isEmpty() -> Text("Required — exactly 10 digits", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        trimmedPhone.all { it in '0'..'9' } && trimmedPhone.length == 10 ->
+                            Text("10/10 digits entered ✓", color = MaterialTheme.colorScheme.primary)
+                        trimmedPhone.all { it in '0'..'9' } ->
+                            Text("${trimmedPhone.length}/10 digits", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        else -> Text("${trimmedPhone.length} characters entered", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

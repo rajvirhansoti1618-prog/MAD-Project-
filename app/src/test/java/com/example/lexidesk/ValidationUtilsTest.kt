@@ -160,4 +160,74 @@ class ValidationUtilsTest {
     fun isValidUrl_withWhitespacePadding_trimsCorrectly() {
         assertTrue(ValidationUtils.isValidUrl("  https://example.com  "))
     }
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // Edge-case tests added for stricter phone/email validation (Oct 2026)
+    // ────────────────────────────────────────────────────────────────────────────
+
+    /** isValid10DigitPhone — Unicode / non-ASCII digit rejection */
+    @Test
+    fun isValid10DigitPhone_rejectsUnicodeAndNonAsciiDigits() {
+        // Arabic-Indic digits — Char.isDigit() returns true for these, but ASCII range check must not
+        assertFalse(ValidationUtils.isValid10DigitPhone("٩٨٧٦٥٤٣٢١٠"))
+        // Circled digit characters (e.g. ①②③…)
+        assertFalse(ValidationUtils.isValid10DigitPhone("①②③④⑤⑥⑦⑧⑨⓪"))
+    }
+
+    /** isValid10DigitPhone — mixed-valid-looking inputs */
+    @Test
+    fun isValid10DigitPhone_rejectsMixedValidLooking() {
+        // 11 chars with leading '+' — stripping would change the number
+        assertFalse(ValidationUtils.isValid10DigitPhone("+9198765432"))
+        // Trailing space — trim() is applied internally so "9198765432 " trims to 10 digits → true
+        // (space trimmed → valid 10 digits, consistent with existing trim behavior)
+        assertTrue(ValidationUtils.isValid10DigitPhone("9198765432 "))
+        // Embedded space → not all chars in ASCII digit range after trim → false
+        assertFalse(ValidationUtils.isValid10DigitPhone("9198 76543"))
+        // Leading/trailing zeros (valid 10-digit number)
+        assertTrue(ValidationUtils.isValid10DigitPhone("0000000000"))
+    }
+
+    /** isValid10DigitPhone — rejects internal symbols even when digit-count is 10 */
+    @Test
+    fun isValid10DigitPhone_rejectsSymbolsEvenWithCorrectDigitCount() {
+        assertFalse(ValidationUtils.isValid10DigitPhone("919876-432"))  // hyphen, only 9 digits
+        assertFalse(ValidationUtils.isValid10DigitPhone("91987+6432"))  // plus sign inside
+        assertFalse(ValidationUtils.isValid10DigitPhone("9198764321a")) // letter suffix → 11 chars
+    }
+
+    /** isValidEmailFormat — consecutive dots in local part or domain */
+    @Test
+    fun isValidEmailFormat_rejectsConsecutiveDots() {
+        assertFalse(ValidationUtils.isValidEmailFormat("a..b@example.com"))   // consecutive dots in local
+        assertFalse(ValidationUtils.isValidEmailFormat("a@b..com"))           // consecutive dots in domain
+        assertFalse(ValidationUtils.isValidEmailFormat("a@ex..ample.com"))    // consecutive dots mid-domain
+    }
+
+    /** isValidEmailFormat — leading or trailing dot in local part */
+    @Test
+    fun isValidEmailFormat_rejectsLeadingTrailingDotInLocal() {
+        assertFalse(ValidationUtils.isValidEmailFormat(".a@example.com"))   // starts with dot
+        assertFalse(ValidationUtils.isValidEmailFormat("a.@example.com"))   // ends with dot
+        assertFalse(ValidationUtils.isValidEmailFormat(".@example.com"))    // only a dot
+    }
+
+    /** isValidEmailFormat — domain labels starting or ending with a hyphen */
+    @Test
+    fun isValidEmailFormat_rejectsDomainLabelStartingOrEndingWithHyphen() {
+        assertFalse(ValidationUtils.isValidEmailFormat("a@-example.com"))   // label starts with hyphen
+        assertFalse(ValidationUtils.isValidEmailFormat("a@example-.com"))   // label ends with hyphen
+        assertFalse(ValidationUtils.isValidEmailFormat("a@ex.-ample.com"))  // subdomain starts with hyphen
+        assertFalse(ValidationUtils.isValidEmailFormat("a@ex.ample-.co"))   // subdomain ends with hyphen
+    }
+
+    /** isValidEmailFormat — valid subdomains and co.in style addresses */
+    @Test
+    fun isValidEmailFormat_acceptsValidSubdomainsAndCoIn() {
+        assertTrue(ValidationUtils.isValidEmailFormat("name@company.co.in"))
+        assertTrue(ValidationUtils.isValidEmailFormat("user@mail.sub.domain.org"))
+        assertTrue(ValidationUtils.isValidEmailFormat("a@b.com"))          // single-char local
+        assertTrue(ValidationUtils.isValidEmailFormat("x.y@example.com"))  // dot in local (not leading/trailing)
+        assertTrue(ValidationUtils.isValidEmailFormat("first.last+tag@sub.domain.io"))
+    }
 }
