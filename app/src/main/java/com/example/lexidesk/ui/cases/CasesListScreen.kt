@@ -140,7 +140,7 @@ fun CasesListScreen(
                     contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 84.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(state.cases) { caseItem ->
+                    items(state.cases, key = { it.id }) { caseItem ->
                         CaseListItemCard(
                             caseItem = caseItem,
                             onClick = { onCaseClick(caseItem.id) }

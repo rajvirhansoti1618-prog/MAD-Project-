@@ -139,7 +139,7 @@ fun ClientsListScreen(
                     contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 84.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(state.clients) { client ->
+                    items(state.clients, key = { it.id }) { client ->
                         ClientListItemCard(
                             client = client,
                             onClick = { onClientClick(client.id) }

@@ -98,27 +98,32 @@ class ClientsViewModel(private val app: LexiDeskApp) : ViewModel() {
         _sortBy.value = sort
     }
 
+    // Cache one StateFlow per clientId so recompositions don't create a new subscription each time.
+    private val _clientDetailStateCache = mutableMapOf<Long, StateFlow<ClientDetailUiState>>()
+
     fun getClientDetailState(clientId: Long): StateFlow<ClientDetailUiState> {
-        return combine(
-            app.clientRepository.getClientById(clientId),
-            app.caseRepository.getCasesByClient(clientId),
-            app.taskRepository.getTasksByClient(clientId),
-            app.documentRepository.getDocumentsByClient(clientId),
-            app.noteRepository.getNotesByClient(clientId)
-        ) { client, cases, tasks, docs, notes ->
-            ClientDetailUiState(
-                client = client,
-                cases = cases,
-                tasks = tasks,
-                documents = docs,
-                notes = notes,
-                isLoading = false
+        return _clientDetailStateCache.getOrPut(clientId) {
+            combine(
+                app.clientRepository.getClientById(clientId),
+                app.caseRepository.getCasesByClient(clientId),
+                app.taskRepository.getTasksByClient(clientId),
+                app.documentRepository.getDocumentsByClient(clientId),
+                app.noteRepository.getNotesByClient(clientId)
+            ) { client, cases, tasks, docs, notes ->
+                ClientDetailUiState(
+                    client = client,
+                    cases = cases,
+                    tasks = tasks,
+                    documents = docs,
+                    notes = notes,
+                    isLoading = false
+                )
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = ClientDetailUiState(isLoading = true)
             )
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ClientDetailUiState(isLoading = true)
-        )
+        }
     }
 
     fun saveClient(
